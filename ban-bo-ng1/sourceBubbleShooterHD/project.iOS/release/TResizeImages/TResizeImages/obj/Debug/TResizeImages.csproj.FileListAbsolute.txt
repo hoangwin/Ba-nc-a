@@ -1,0 +1,9 @@
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\bin\Debug\TResizeImages.exe.config
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\bin\Debug\TResizeImages.exe
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\bin\Debug\TResizeImages.pdb
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Debug\TResizeImages.csprojResolveAssemblyReference.cache
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Debug\TResizeImages.Form1.resources
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Debug\TResizeImages.Properties.Resources.resources
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Debug\TResizeImages.csproj.GenerateResource.Cache
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Debug\TResizeImages.exe
+G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Debug\TResizeImages.pdb
