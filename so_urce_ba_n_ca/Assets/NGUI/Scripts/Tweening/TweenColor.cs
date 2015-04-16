@@ -24,9 +24,9 @@ public class TweenColor : UITweener
 	{
 		mCached = true;
 		mWidget = GetComponentInChildren<UIWidget>();
-		Renderer ren = renderer;
+		Renderer ren = GetComponent<Renderer>();
 		if (ren != null) mMat = ren.material;
-		mLight = light;
+		mLight = GetComponent<Light>();
 	}
 
 	[System.Obsolete("Use 'value' instead")]

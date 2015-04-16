@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Xml;
 using System.IO;
+using System.Collections.Generic;
 public class NAPCARD : MonoBehaviour 
 {
 	//public UILabel nhamang;
@@ -87,13 +88,23 @@ public class NAPCARD : MonoBehaviour
         headers["Content-Type"] = "text/xml;";
         WWW www = null;
 #if UNITY_ANDROID
-        www = new WWW(url, System.Text.Encoding.UTF8.GetBytes(envelope), headers);
+        //www = new WWW(url, System.Text.Encoding.UTF8.GetBytes(envelope), headers);
+        Dictionary<string, string> dt = new Dictionary<string, string>();
+        dt.Add("Content-Type", "text/xml;");
+        www = new WWW(url, System.Text.Encoding.UTF8.GetBytes(envelope), dt);
 #elif UNITY_WP8
         System.Collections.Generic.Dictionary<string, string> theader = new System.Collections.Generic.Dictionary<string, string>();
         theader.Add("Content-Type", "text/xml;");
         www = new WWW(url, System.Text.Encoding.UTF8.GetBytes(envelope), theader);
 #elif UNITY_IPHONE
-        www = new WWW(url, System.Text.Encoding.UTF8.GetBytes(envelope), headers);
+       // Dictionary<int, string> dt = new Dictionary<int, string>();
+       // dt.Add(1, "One");
+       // dt.Add(2, "Two");
+       // dt.Add(3, "Three");
+        Dictionary<string, string> dt = new Dictionary<string, string>();
+        dt.Add("Content-Type", "text/xml;");
+        www = new WWW(url, System.Text.Encoding.UTF8.GetBytes(envelope), dt);
+        //www = new WWW(url, System.Text.Encoding.UTF8.GetBytes(envelope), headers);//old unity 4.6
 #endif
         return www;
     }

@@ -31,9 +31,9 @@ public class ScoreControl : MonoBehaviour {
     public static float TimeWaittingAddCoin = 0f;	
     // Use this for initialization
 
-    public static int OFFSET_COIN = 132;
-	void Start () {	
-       
+    public static int OFFSET_COIN = 0;
+	void Start () {
+        PlayerPrefs.DeleteAll();
 	}
 	
 	// Update is called once per frame
@@ -42,6 +42,7 @@ public class ScoreControl : MonoBehaviour {
 	}
     public static void addCoind(int addcoin)
     {
+        Debug.Log("aaaaaaaaaaa");
         //Debug.Log("Coin:" + ScoreControl._Coin);
         //Debug.Log("Coin1:" + ScoreControl._Coin1);
         if (_Coin == _Coin1 - OFFSET_COIN)
