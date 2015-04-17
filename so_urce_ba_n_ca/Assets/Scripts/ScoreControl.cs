@@ -33,7 +33,7 @@ public class ScoreControl : MonoBehaviour {
 
     public static int OFFSET_COIN = 0;
 	void Start () {
-        PlayerPrefs.DeleteAll();
+      //  PlayerPrefs.DeleteAll();
 	}
 	
 	// Update is called once per frame

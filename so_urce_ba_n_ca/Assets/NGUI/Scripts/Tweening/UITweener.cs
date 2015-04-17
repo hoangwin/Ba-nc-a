@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2013 Tasharen Entertainment
+// Copyright © 2011-2015 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -120,7 +120,7 @@ public abstract class UITweener : MonoBehaviour
 			if (mDuration != duration)
 			{
 				mDuration = duration;
-				mAmountPerDelta = Mathf.Abs((duration > 0f) ? 1f / duration : 1000f);
+				mAmountPerDelta = Mathf.Abs((duration > 0f) ? 1f / duration : 1000f) * Mathf.Sign(mAmountPerDelta);
 			}
 			return mAmountPerDelta;
 		}
@@ -136,7 +136,7 @@ public abstract class UITweener : MonoBehaviour
 	/// Direction that the tween is currently playing in.
 	/// </summary>
 
-	public AnimationOrTween.Direction direction { get { return mAmountPerDelta < 0f ? AnimationOrTween.Direction.Reverse : AnimationOrTween.Direction.Forward; } }
+	public AnimationOrTween.Direction direction { get { return amountPerDelta < 0f ? AnimationOrTween.Direction.Reverse : AnimationOrTween.Direction.Forward; } }
 
 	/// <summary>
 	/// This function is called by Unity when you add a component. Automatically set the starting values for convenience.
@@ -202,27 +202,81 @@ public abstract class UITweener : MonoBehaviour
 		}
 
 		// If the factor goes out of range and this is a one-time tweening operation, disable the script
-		if ((style == Style.Once) && (mFactor > 1f || mFactor < 0f))
+		if ((style == Style.Once) && (duration == 0f || mFactor > 1f || mFactor < 0f))
 		{
 			mFactor = Mathf.Clamp01(mFactor);
 			Sample(mFactor, true);
 
-			current = this;
+			if (current == null)
+			{
+				UITweener before = current;
+				current = this;
 
-			// Notify the listener delegates
-			EventDelegate.Execute(onFinished);
+				if (onFinished != null)
+				{
+					mTemp = onFinished;
+					onFinished = new List<EventDelegate>();
 
-			// Deprecated legacy functionality support
-			if (eventReceiver != null && !string.IsNullOrEmpty(callWhenFinished))
-				eventReceiver.SendMessage(callWhenFinished, this, SendMessageOptions.DontRequireReceiver);
+					// Notify the listener delegates
+					EventDelegate.Execute(mTemp);
 
-			current = null;
+					// Re-add the previous persistent delegates
+					for (int i = 0; i < mTemp.Count; ++i)
+					{
+						EventDelegate ed = mTemp[i];
+						if (ed != null && !ed.oneShot) EventDelegate.Add(onFinished, ed, ed.oneShot);
+					}
+					mTemp = null;
+				}
+
+				// Deprecated legacy functionality support
+				if (eventReceiver != null && !string.IsNullOrEmpty(callWhenFinished))
+					eventReceiver.SendMessage(callWhenFinished, this, SendMessageOptions.DontRequireReceiver);
+
+				current = before;
+			}
 
 			// Disable this script unless the function calls above changed something
-			if (mFactor == 1f && mAmountPerDelta > 0f || mFactor == 0f && mAmountPerDelta < 0f)
+			if (duration == 0f || (mFactor == 1f && mAmountPerDelta > 0f || mFactor == 0f && mAmountPerDelta < 0f))
 				enabled = false;
 		}
 		else Sample(mFactor, false);
+	}
+
+	List<EventDelegate> mTemp = null;
+
+	/// <summary>
+	/// Convenience function -- set a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).
+	/// </summary>
+
+	public void SetOnFinished (EventDelegate.Callback del) { EventDelegate.Set(onFinished, del); }
+
+	/// <summary>
+	/// Convenience function -- set a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).
+	/// </summary>
+
+	public void SetOnFinished (EventDelegate del) { EventDelegate.Set(onFinished, del); }
+
+	/// <summary>
+	/// Convenience function -- add a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).
+	/// </summary>
+
+	public void AddOnFinished (EventDelegate.Callback del) { EventDelegate.Add(onFinished, del); }
+
+	/// <summary>
+	/// Convenience function -- add a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).
+	/// </summary>
+
+	public void AddOnFinished (EventDelegate del) { EventDelegate.Add(onFinished, del); }
+
+	/// <summary>
+	/// Remove an OnFinished delegate. Will work even while iterating through the list when the tweener has finished its operation.
+	/// </summary>
+
+	public void RemoveOnFinished (EventDelegate del)
+	{
+		if (onFinished != null) onFinished.Remove(del);
+		if (mTemp != null) mTemp.Remove(del);
 	}
 
 	/// <summary>
@@ -340,12 +394,14 @@ public abstract class UITweener : MonoBehaviour
 
 	/// <summary>
 	/// Manually reset the tweener's state to the beginning.
+	/// If the tween is playing forward, this means the tween's start.
+	/// If the tween is playing in reverse, this means the tween's end.
 	/// </summary>
 
 	public void ResetToBeginning ()
 	{
 		mStarted = false;
-		mFactor = (mAmountPerDelta < 0f) ? 1f : 0f;
+		mFactor = (amountPerDelta < 0f) ? 1f : 0f;
 		Sample(mFactor, false);
 	}
 
@@ -382,23 +438,39 @@ public abstract class UITweener : MonoBehaviour
 #if UNITY_FLASH
 		if ((object)comp == null) comp = (T)go.AddComponent<T>();
 #else
-		if (comp == null) comp = go.AddComponent<T>();
+		// Find the tween with an unset group ID (group ID of 0).
+		if (comp != null && comp.tweenGroup != 0)
+		{
+			comp = null;
+			T[] comps = go.GetComponents<T>();
+			for (int i = 0, imax = comps.Length; i < imax; ++i)
+			{
+				comp = comps[i];
+				if (comp != null && comp.tweenGroup == 0) break;
+				comp = null;
+			}
+		}
+
+		if (comp == null)
+		{
+			comp = go.AddComponent<T>();
+
+			if (comp == null)
+			{
+				Debug.LogError("Unable to add " + typeof(T) + " to " + NGUITools.GetHierarchy(go), go);
+				return null;
+			}
+		}
 #endif
 		comp.mStarted = false;
 		comp.duration = duration;
 		comp.mFactor = 0f;
-		comp.mAmountPerDelta = Mathf.Abs(comp.mAmountPerDelta);
+		comp.mAmountPerDelta = Mathf.Abs(comp.amountPerDelta);
 		comp.style = Style.Once;
 		comp.animationCurve = new AnimationCurve(new Keyframe(0f, 0f, 0f, 1f), new Keyframe(1f, 1f, 1f, 0f));
 		comp.eventReceiver = null;
 		comp.callWhenFinished = null;
 		comp.enabled = true;
-
-		if (duration <= 0f)
-		{
-			comp.Sample(1f, true);
-			comp.enabled = false;
-		}
 		return comp;
 	}
 

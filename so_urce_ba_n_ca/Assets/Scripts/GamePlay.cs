@@ -29,6 +29,11 @@ public class GamePlay : MonoBehaviour {
     public GameObject BGTimeAddCoin;
     public static int gameMode = 0;
     public GameObject ButtonAdcoin;
+    void Awake()
+    {
+        // Make the game run as fast as possible in the web player
+        Application.targetFrameRate = 60;
+    }
 	void Start () {
 		DEF.Init();
         ///managerFish = gameObject.AddComponent<ManagerFish>();
@@ -61,11 +66,7 @@ public class GamePlay : MonoBehaviour {
         }
 
 	}
-    void Awake()
-    {
-        // Make the game run as fast as possible in the web player
-      //  Application.targetFrameRate = 30;
-    }
+    
 	// Update is called once per frame
 	void Update () 
 	{
