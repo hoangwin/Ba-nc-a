@@ -1,9 +1,14 @@
 package com.mygame.bancaanxuhd;
 
+import com.google.ads.AdRequest.ErrorCode;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+//import com.startapp.android.publish.StartAppAd;
+//import com.startapp.android.publish.StartAppSDK;
+//import com.startapp.android.publish.banner.Banner;
 import com.unity3d.player.*;
 import android.app.NativeActivity;
 import android.app.PendingIntent;
@@ -36,22 +41,28 @@ public class UnityPlayerNativeActivity extends NativeActivity
 	public static String SAVE_REF ="SAVE_FILE";
 	public static String SAVE_IS_ADS ="SAVE_FILE";
 	public static boolean isShowAds = true;
+	private InterstitialAd interstitial;
+//	private StartAppAd startAppAd = new StartAppAd(this);;
+	// Setup activity layout
 	@Override protected void onCreate (Bundle savedInstanceState)
 	{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 
 		getWindow().takeSurface(null);
-		setTheme(android.R.style.Theme_NoTitleBar_Fullscreen);
-		getWindow().setFormat(PixelFormat.RGB_565);
+		getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
 		mUnityPlayer = new UnityPlayer(this);
 		if (mUnityPlayer.getSettings ().getBoolean ("hide_status_bar", true))
+		{
+			setTheme(android.R.style.Theme_NoTitleBar_Fullscreen);
 			getWindow ().setFlags (WindowManager.LayoutParams.FLAG_FULLSCREEN,
 			                       WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		}
 
 	//	setContentView(mUnityPlayer);
 		mUnityPlayer.requestFocus();
+		//UnityPlayer.UnitySendMessage("GameObjectName1", "MethodName1", "Message to send");
 		instance = this;
 		checkMyApp("com.mygame.bancaanxuhd");
 		//UnityPlayer.UnitySendMessage("GameObjectName1", "MethodName1", "Message to send");
@@ -59,12 +70,53 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		layout.setPadding(0, 0, 0, 0);
 		loadGame();
 		if(isShowAds)
+		{
 			showAdmobAds( this);
+			ShowAdmobFull();
+		}
 	
 		layout.addView(mUnityPlayer);
-		//layout.addView(adView,adsParams);			
-		setContentView(layout);		
+		//layout.addView(adView,adsParams);	
+				
+	//	StartAppSDK.init(this, "106318112", "210307555", true);
+		//startAppAd.showAd(); // show the ad
+		//startAppAd.loadAd(); // load the next ad
+
+	//	StartAppAd.showSplash(this, savedInstanceState);
+		setContentView(layout);
+		
+
 	}
+public void ShowAdmobFull()
+{
+	Log.d("Admob", "MRAID InApp Ad is calling..");
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				interstitial = new InterstitialAd(instance);
+			    interstitial.setAdUnitId("ca-app-pub-1521173422394011/1837725283");//hcgmobilegame
+
+			// Create ad request.
+				AdRequest adRequest = new AdRequest.Builder().build();
+				// Begin loading your interstitial.
+			    interstitial.loadAd(adRequest);	
+				interstitial.setAdListener(new AdListener() {
+					  @Override
+					  public void onAdLoaded() {
+						  interstitial.show();
+					  }
+					});
+			}});	
+	
+
+}
+public static  int ShowAds()
+{
+
+	instance.ShowAdmobFull();
+	return 1;
+}
+	
 	
 	static FrameLayout layout ;
 	static FrameLayout.LayoutParams adsParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, android.view.Gravity.TOP | android.view.Gravity.CENTER);
@@ -80,7 +132,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 			public void run() {
 			    adView = new AdView(UnityPlayer.currentActivity);
 			    adView.setAdSize(AdSize.BANNER);
-			    adView.setAdUnitId("a153bb54b086ef4");
+			    adView.setAdUnitId("ca-app-pub-1521173422394011/3123443687");
 			//	adView = new AdView(UnityPlayer.currentActivity, AdSize.SMART_BANNER, "a1531e034cf3eee");//hcgmobilegame
 				
 				 AdRequest adRequest = new AdRequest.Builder()
@@ -257,7 +309,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);        
     }
 	*/
-	protected void onDestroy ()
+	@Override protected void onDestroy ()
 	{
 			   if (adView != null) {
 			      adView.destroy();
@@ -274,12 +326,14 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		    }
 		super.onPause();
 		mUnityPlayer.pause();
+	//	startAppAd.onPause();
 	}
 
 	// Resume Unity
 	@Override protected void onResume()
 	{
 		super.onResume();
+	//	startAppAd.onResume();
 		  if (adView != null) {
 		      adView.resume();
 		    }
