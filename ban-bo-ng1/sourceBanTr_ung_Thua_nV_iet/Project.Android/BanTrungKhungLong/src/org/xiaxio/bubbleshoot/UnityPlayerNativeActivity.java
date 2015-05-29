@@ -6,15 +6,19 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
-//import com.startapp.android.publish.StartAppAd;
-//import com.startapp.android.publish.StartAppSDK;
-//import com.startapp.android.publish.banner.Banner;
+import com.startapp.android.publish.Ad;
+import com.startapp.android.publish.AdEventListener;
+import com.startapp.android.publish.StartAppAd;
+import com.startapp.android.publish.StartAppSDK;
+import com.startapp.android.publish.banner.Banner;
 import com.unity3d.player.*;
-
 import android.app.NativeActivity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Debug;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -25,6 +29,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
 
 import com.chartboost.sdk.*;
 import com.chartboost.sdk.Libraries.CBLogging.Level;
@@ -35,7 +41,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 	protected UnityPlayer mUnityPlayer;		// don't change the name of this variable; referenced from native code
 	public static UnityPlayerNativeActivity instance;
 	private InterstitialAd interstitial;
-//	private StartAppAd startAppAd = new StartAppAd(this);;
+	private StartAppAd startAppAd = new StartAppAd(this);
 	// Setup activity layouti
 	public static boolean isFistAds = true;
 	@Override protected void onCreate (Bundle savedInstanceState)
@@ -67,12 +73,17 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		instance = this;
 		layout = new FrameLayout(this);
 		layout.setPadding(0, 0, 0, 0);
-		showAdmobAds( this);
-		instance.ShowAdmobFull();
-		isFistAds = true;
+	//	showAdmobAds( this);
+	//	instance.ShowAdmobFull();
+
 		layout.addView(mUnityPlayer);
 		//layout.addView(adView,adsParams);			
-		//StartAppSDK.init(this, "106420618", "208256714", true);
+		
+		StartAppSDK.init(this, "106420618", "208256714");//, false);
+		startAppAd = new StartAppAd(this);
+		showStartAppBanner();
+		//InMobi.initialize(this, "faa84edfbcf049b9ad39a5b7dc6057a9");
+		
 		//startAppAd.showAd(); // show the ad
 		//startAppAd.loadAd(); // load the next ad
 
@@ -81,7 +92,11 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		
 
 	}
-	 
+public void showStartAppBanner()
+{
+	Banner startAppBanner = new Banner(this);
+	layout.addView(startAppBanner, adsParams);
+}
 	public void ShowAdmobFull()// goi tu ben unity sang
 	{
 		Log.d("Admob", "MRAID InApp Ad is calling..");
@@ -118,28 +133,41 @@ public class UnityPlayerNativeActivity extends NativeActivity
 					}
 					public void onAdLeftApplication() {
 						Log.d("Admob onAdLeftApplication", "onAdLeftApplication");
-					}
-					
+					}					
 				});
 			}
 		});
 
 	}
+	public void ShowStarAppFull()
+	{
+    	startAppAd.showAd(); // show the ad		        	
+		startAppAd.loadAd ();			
+			
+	}	
 public static  int ShowAdsFull()// goi tu unity sang
 {
-	if(isFistAds)
-	{
-		isFistAds = false;
+	
 		UnityPlayerNativeActivity.ShowChartboost();
-	}
-	else
-		instance.ShowAdmobFull();
+//		instance.ShowAdmobFull();
 	return 1;
 }
 public static  int ShowChartboost()
 {
-		//Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);		
+		 if (Chartboost.hasInterstitial(CBLocation.LOCATION_LEADERBOARD))	
+	{
+		//Chartboost.cacheInterstitial(CBLocation.LOCATION_LEADERBOARD);
+		Chartboost.showInterstitial(CBLocation.LOCATION_LEADERBOARD);
+	}	
+	else if (Chartboost.hasInterstitial(CBLocation.LOCATION_MAIN_MENU))	
+	{
+		//Chartboost.cacheInterstitial(CBLocation.LOCATION_MAIN_MENU);
+		Chartboost.showInterstitial(CBLocation.LOCATION_MAIN_MENU);
+	}else
+	{
+		//Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);
 		Chartboost.showInterstitial(CBLocation.LOCATION_DEFAULT);
+	}	
 		return 1;
 }	
 	
@@ -182,7 +210,11 @@ public static  int ShowChartboost()
 	    super.onStart();
 	    Chartboost.onStart(this);
 	}
-	
+	@Override
+	public void onBackPressed() {
+    startAppAd.onBackPressed();
+    super.onBackPressed();
+}
 	@Override protected void onDestroy ()
 	{
 		   if (adView != null) {
@@ -202,7 +234,7 @@ public static  int ShowChartboost()
 		super.onPause();
 		mUnityPlayer.pause();
 		Chartboost.onPause(this);
-		//startAppAd.onPause();
+		startAppAd.onPause();
 	}
 
 	// Resume Unity
@@ -210,7 +242,7 @@ public static  int ShowChartboost()
 	{
 		super.onResume();
 		Chartboost.onResume(this);
-		//startAppAd.onResume();
+		startAppAd.onResume();
 		  if (adView != null) {
 		      adView.resume();
 		    }
@@ -276,6 +308,8 @@ public static  int ShowChartboost()
 		public void didFailToLoadInterstitial(String location, CBImpressionError error) {
 			Log.i("Chartboost ", "DID FAIL TO LOAD INTERSTITIAL '"+ (location != null ? location : "null")+ " Error: " + error.name());
 		//	Toast.makeText(getApplicationContext(), "INTERSTITIAL '"+location+"' REQUEST FAILED - " + error.name(), Toast.LENGTH_SHORT).show();
+			//startAppAd = new StartAppAd(UnityPlayerNativeActivity.instance);
+			ShowStarAppFull();
 		}
 	
 		@Override
