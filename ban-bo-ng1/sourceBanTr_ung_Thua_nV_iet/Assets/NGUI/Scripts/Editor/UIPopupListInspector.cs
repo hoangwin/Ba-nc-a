@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 #if !UNITY_3_5 && !UNITY_FLASH
@@ -131,8 +131,6 @@ public class UIPopupListInspector : UIWidgetContainerEditor
 		if (GUI.changed) serializedObject.FindProperty("mSelectedItem").stringValue = sel;
 
 		NGUIEditorTools.DrawProperty("Position", serializedObject, "position");
-		NGUIEditorTools.DrawProperty("Alignment", serializedObject, "alignment");
-		NGUIEditorTools.DrawProperty("Open on", serializedObject, "openOn");
 		NGUIEditorTools.DrawProperty("Localized", serializedObject, "isLocalized");
 
 		DrawAtlas();
@@ -187,7 +185,7 @@ public class UIPopupListInspector : UIWidgetContainerEditor
 					}
 					else
 					{
-						ComponentSelector.Show<Font>(OnDynamicFont, new string[] { ".ttf", ".otf"});
+						ComponentSelector.Show<Font>(OnDynamicFont);
 					}
 				}
 
@@ -230,7 +228,7 @@ public class UIPopupListInspector : UIWidgetContainerEditor
 					EditorGUI.BeginDisabledGroup(ttf.hasMultipleDifferentValues);
 					NGUIEditorTools.DrawProperty("Font Size", serializedObject, "fontSize", GUILayout.Width(142f));
 					NGUIEditorTools.DrawProperty("", serializedObject, "fontStyle", GUILayout.MinWidth(40f));
-					NGUIEditorTools.DrawPadding();
+					GUILayout.Space(18f);
 					EditorGUI.EndDisabledGroup();
 				}
 				GUILayout.EndHorizontal();
@@ -245,7 +243,7 @@ public class UIPopupListInspector : UIWidgetContainerEditor
 			NGUIEditorTools.SetLabelWidth(14f);
 			NGUIEditorTools.DrawProperty("X", serializedObject, "padding.x", GUILayout.MinWidth(30f));
 			NGUIEditorTools.DrawProperty("Y", serializedObject, "padding.y", GUILayout.MinWidth(30f));
-			NGUIEditorTools.DrawPadding();
+			GUILayout.Space(18f);
 			NGUIEditorTools.SetLabelWidth(80f);
 			GUILayout.EndHorizontal();
 

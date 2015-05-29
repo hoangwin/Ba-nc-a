@@ -23,7 +23,7 @@ public class BubbleAnimScore : MonoBehaviour {
         GamePlay.instance.LabelScore.text = ScoreControl.Score.ToString() + "\nScore";
         if (GamePlay.currentState == GamePlay.STATE_WIN)
         {
-            GamePlay.instance.LabelScoreWin.text = ScoreControl.Score.ToString();
+            GameObject.Find("LabelScoreWin").GetComponent<UILabel>().text = ScoreControl.Score.ToString();
         }
 
     }

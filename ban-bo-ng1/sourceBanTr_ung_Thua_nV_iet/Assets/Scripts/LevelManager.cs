@@ -137,7 +137,7 @@ public class LevelManager {
 					obj.GetComponent<Bubble>().setValue(temp[j,i]);
 					obj.GetComponent<Bubble>().state = Bubble.STATE_BUBBLE_IDE;
 					//obj.rigidbody2D.mass = 1;
-                    obj.GetComponent<Rigidbody2D>().isKinematic = true;
+                    obj.rigidbody2D.isKinematic = true;
                     //obj.rigidbody2D.
                      //   obj.set
 
@@ -395,10 +395,10 @@ public class LevelManager {
 							bubble = ((GameObject)( bubbleListNeighbours[n])).GetComponent<Bubble>();
                             
                            
-							bubble.GetComponent<Rigidbody2D>().gravityScale =1;
-							bubble.GetComponent<Collider2D>().enabled = false;
-                            bubble.GetComponent<Rigidbody2D>().isKinematic = false;
-							bubble.GetComponent<Rigidbody2D>().velocity = new Vector2(Random.Range(-2f,2f),Random.Range(1f,3f));
+							bubble.rigidbody2D.gravityScale =1;
+							bubble.collider2D.enabled = false;
+                            bubble.rigidbody2D.isKinematic = false;
+							bubble.rigidbody2D.velocity = new Vector2(Random.Range(-2f,2f),Random.Range(1f,3f));
 							bubbleTableArray[bubble.indexY,bubble.indexX] = null;
 							
 						}
@@ -430,10 +430,10 @@ public class LevelManager {
         {
             
             bubble = (GameObject)bubbleListNeighboursSameValue[i];
-            bubble.GetComponent<Rigidbody2D>().gravityScale = 1;
-            bubble.GetComponent<Collider2D>().enabled = false;
-            bubble.GetComponent<Rigidbody2D>().isKinematic = false;
-            bubble.GetComponent<Rigidbody2D>().velocity = new Vector2(Random.Range(-2f, 2f), Random.Range(1f, 3f));
+            bubble.rigidbody2D.gravityScale = 1;
+            bubble.collider2D.enabled = false;
+            bubble.rigidbody2D.isKinematic = false;
+            bubble.rigidbody2D.velocity = new Vector2(Random.Range(-2f, 2f), Random.Range(1f, 3f));
             LevelManager.bubbleTableArray[bubble.GetComponent<Bubble>().indexY, bubble.GetComponent<Bubble>().indexX] = null;
         }
     }

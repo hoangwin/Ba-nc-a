@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -12,8 +12,8 @@ using System.Collections.Generic;
 /// </summary>
 
 [CanEditMultipleObjects]
-[CustomEditor(typeof(UITexture), true)]
-public class UITextureInspector : UIBasicSpriteEditor
+[CustomEditor(typeof(UITexture))]
+public class UITextureInspector : UIWidgetInspector
 {
 	UITexture mTex;
 
@@ -25,33 +25,29 @@ public class UITextureInspector : UIBasicSpriteEditor
 
 	protected override bool ShouldDrawProperties ()
 	{
-		if (target == null) return false;
 		SerializedProperty sp = NGUIEditorTools.DrawProperty("Texture", serializedObject, "mTexture");
 		NGUIEditorTools.DrawProperty("Material", serializedObject, "mMat");
 
-		if (sp != null) NGUISettings.texture = sp.objectReferenceValue as Texture;
+		NGUISettings.texture = sp.objectReferenceValue as Texture;
 
-		if (mTex != null && (mTex.material == null || serializedObject.isEditingMultipleObjects))
+		if (mTex.material == null || serializedObject.isEditingMultipleObjects)
 		{
 			NGUIEditorTools.DrawProperty("Shader", serializedObject, "mShader");
 		}
 
-		EditorGUI.BeginDisabledGroup(mTex == null || mTex.mainTexture == null || serializedObject.isEditingMultipleObjects);
-
-		NGUIEditorTools.DrawRectProperty("UV Rect", serializedObject, "mRect");
-
-		sp = serializedObject.FindProperty("mFixedAspect");
-		bool before = sp.boolValue;
-		NGUIEditorTools.DrawProperty("Fixed Aspect", sp);
-		if (sp.boolValue != before) (target as UIWidget).drawRegion = new Vector4(0f, 0f, 1f, 1f);
-
-		if (sp.boolValue)
+		EditorGUI.BeginDisabledGroup(serializedObject.isEditingMultipleObjects);
+		if (mTex.mainTexture != null)
 		{
-			EditorGUILayout.HelpBox("Note that Fixed Aspect mode is not compatible with Draw Region modifications done by sliders and progress bars.", MessageType.Info);
-		}
+			Rect rect = EditorGUILayout.RectField("UV Rectangle", mTex.uvRect);
 
+			if (rect != mTex.uvRect)
+			{
+				NGUIEditorTools.RegisterUndo("UV Rectangle Change", mTex);
+				mTex.uvRect = rect;
+			}
+		}
 		EditorGUI.EndDisabledGroup();
-		return true;
+		return (sp.objectReferenceValue != null);
 	}
 
 	/// <summary>
@@ -60,8 +56,7 @@ public class UITextureInspector : UIBasicSpriteEditor
 
 	public override bool HasPreviewGUI ()
 	{
-		return (Selection.activeGameObject == null || Selection.gameObjects.Length == 1) &&
-			(mTex != null) && (mTex.mainTexture as Texture2D != null);
+		return (mTex != null) && (mTex.mainTexture as Texture2D != null);
 	}
 
 	/// <summary>
@@ -71,15 +66,6 @@ public class UITextureInspector : UIBasicSpriteEditor
 	public override void OnPreviewGUI (Rect rect, GUIStyle background)
 	{
 		Texture2D tex = mTex.mainTexture as Texture2D;
-
-		if (tex != null)
-		{
-			Rect tc = mTex.uvRect;
-			tc.xMin *= tex.width;
-			tc.xMax *= tex.width;
-			tc.yMin *= tex.height;
-			tc.yMax *= tex.height;
-			NGUIEditorTools.DrawSprite(tex, rect, mTex.color, tc, mTex.border);
-		}
+		if (tex != null) NGUIEditorTools.DrawTexture(tex, rect, mTex.uvRect, mTex.color);
 	}
 }

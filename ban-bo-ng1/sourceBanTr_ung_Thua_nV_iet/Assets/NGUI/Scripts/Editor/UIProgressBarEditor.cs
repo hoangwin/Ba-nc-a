@@ -1,17 +1,13 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
 using UnityEditor;
 
 [CanEditMultipleObjects]
-#if UNITY_3_5
 [CustomEditor(typeof(UIProgressBar))]
-#else
-[CustomEditor(typeof(UIProgressBar), true)]
-#endif
 public class UIProgressBarEditor : UIWidgetContainerEditor
 {
 	public override void OnInspectorGUI ()
@@ -31,16 +27,16 @@ public class UIProgressBarEditor : UIWidgetContainerEditor
 
 		OnDrawExtraFields();
 
-		if (NGUIEditorTools.DrawHeader("Appearance", "Appearance", false, true))
+		if (NGUIEditorTools.DrawHeader("Appearance"))
 		{
-			NGUIEditorTools.BeginContents(true);
+			NGUIEditorTools.BeginContents();
 			NGUIEditorTools.DrawProperty("Foreground", serializedObject, "mFG");
 			NGUIEditorTools.DrawProperty("Background", serializedObject, "mBG");
 			NGUIEditorTools.DrawProperty("Thumb", serializedObject, "thumb");
 
 			GUILayout.BeginHorizontal();
 			NGUIEditorTools.DrawProperty("Direction", serializedObject, "mFill");
-			NGUIEditorTools.DrawPadding();
+			GUILayout.Space(18f);
 			GUILayout.EndHorizontal();
 
 			OnDrawAppearance();
@@ -61,21 +57,10 @@ public class UIProgressBarEditor : UIWidgetContainerEditor
 		if (sb.value != val ||
 			sb.alpha != alpha)
 		{
-			NGUIEditorTools.RegisterUndo("Progress Bar Change", sb);
+			NGUIEditorTools.RegisterUndo("Scroll Bar Change", sb);
 			sb.value = val;
 			sb.alpha = alpha;
-			NGUITools.SetDirty(sb);
-
-			for (int i = 0; i < UIScrollView.list.size; ++i)
-			{
-				UIScrollView sv = UIScrollView.list[i];
-
-				if (sv.horizontalScrollBar == sb || sv.verticalScrollBar == sb)
-				{
-					NGUIEditorTools.RegisterUndo("Progress Bar Change", sv);
-					sv.UpdatePosition();
-				}
-			}
+			UnityEditor.EditorUtility.SetDirty(sb);
 		}
 	}
 

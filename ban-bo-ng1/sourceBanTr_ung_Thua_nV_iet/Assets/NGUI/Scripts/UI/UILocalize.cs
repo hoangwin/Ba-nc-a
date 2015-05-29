@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -9,7 +9,6 @@ using UnityEngine;
 /// Simple script that lets you localize a UIWidget.
 /// </summary>
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(UIWidget))]
 [AddComponentMenu("NGUI/UI/Localize")]
 public class UILocalize : MonoBehaviour
@@ -20,59 +19,20 @@ public class UILocalize : MonoBehaviour
 
 	public string key;
 
+	string mLanguage;
+	bool mStarted = false;
+
 	/// <summary>
-	/// Manually change the value of whatever the localization component is attached to.
+	/// This function is called by the Localization manager via a broadcast SendMessage.
 	/// </summary>
 
-	public string value
-	{
-		set
-		{
-			if (!string.IsNullOrEmpty(value))
-			{
-				UIWidget w = GetComponent<UIWidget>();
-				UILabel lbl = w as UILabel;
-				UISprite sp = w as UISprite;
-
-				if (lbl != null)
-				{
-					// If this is a label used by input, we should localize its default value instead
-					UIInput input = NGUITools.FindInParents<UIInput>(lbl.gameObject);
-					if (input != null && input.label == lbl) input.defaultText = value;
-					else lbl.text = value;
-#if UNITY_EDITOR
-					if (!Application.isPlaying) NGUITools.SetDirty(lbl);
-#endif
-				}
-				else if (sp != null)
-				{
-					UIButton btn = NGUITools.FindInParents<UIButton>(sp.gameObject);
-					if (btn != null && btn.tweenTarget == sp.gameObject)
-						btn.normalSprite = value;
-
-					sp.spriteName = value;
-					sp.MakePixelPerfect();
-#if UNITY_EDITOR
-					if (!Application.isPlaying) NGUITools.SetDirty(sp);
-#endif
-				}
-			}
-		}
-	}
-
-	bool mStarted = false;
+	void OnLocalize (Localization loc) { if (mLanguage != loc.currentLanguage) Localize(); }
 
 	/// <summary>
 	/// Localize the widget on enable, but only if it has been started already.
 	/// </summary>
 
-	void OnEnable ()
-	{
-#if UNITY_EDITOR
-		if (!Application.isPlaying) return;
-#endif
-		if (mStarted) OnLocalize();
-	}
+	void OnEnable () { if (mStarted && Localization.instance != null) Localize(); }
 
 	/// <summary>
 	/// Localize the widget on start.
@@ -80,27 +40,39 @@ public class UILocalize : MonoBehaviour
 
 	void Start ()
 	{
-#if UNITY_EDITOR
-		if (!Application.isPlaying) return;
-#endif
 		mStarted = true;
-		OnLocalize();
+		if (Localization.instance != null) Localize();
 	}
 
 	/// <summary>
-	/// This function is called by the Localization manager via a broadcast SendMessage.
+	/// Force-localize the widget.
 	/// </summary>
 
-	void OnLocalize ()
+	public void Localize ()
 	{
+		Localization loc = Localization.instance;
+		UIWidget w = GetComponent<UIWidget>();
+		UILabel lbl = w as UILabel;
+		UISprite sp = w as UISprite;
+
 		// If no localization key has been specified, use the label's text as the key
-		if (string.IsNullOrEmpty(key))
-		{
-			UILabel lbl = GetComponent<UILabel>();
-			if (lbl != null) key = lbl.text;
-		}
+		if (string.IsNullOrEmpty(mLanguage) && string.IsNullOrEmpty(key) && lbl != null) key = lbl.text;
 
 		// If we still don't have a key, leave the value as blank
-		if (!string.IsNullOrEmpty(key)) value = Localization.Get(key);
+		string val = string.IsNullOrEmpty(key) ? "" : loc.Get(key);
+
+		if (lbl != null)
+		{
+			// If this is a label used by input, we should localize its default value instead
+			UIInput input = NGUITools.FindInParents<UIInput>(lbl.gameObject);
+			if (input != null && input.label == lbl) input.defaultText = val;
+			else lbl.text = val;
+		}
+		else if (sp != null)
+		{
+			sp.spriteName = val;
+			sp.MakePixelPerfect();
+		}
+		mLanguage = loc.currentLanguage;
 	}
 }

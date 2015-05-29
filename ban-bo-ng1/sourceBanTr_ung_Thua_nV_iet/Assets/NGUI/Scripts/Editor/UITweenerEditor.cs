@@ -1,18 +1,18 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(UITweener), true)]
+[CustomEditor(typeof(UITweener))]
 public class UITweenerEditor : Editor
 {
 	public override void OnInspectorGUI ()
 	{
 		GUILayout.Space(6f);
-		NGUIEditorTools.SetLabelWidth(110f);
+		NGUIEditorTools.SetLabelWidth(120f);
 		base.OnInspectorGUI();
 		DrawCommonProperties();
 	}
@@ -24,25 +24,23 @@ public class UITweenerEditor : Editor
 		if (NGUIEditorTools.DrawHeader("Tweener"))
 		{
 			NGUIEditorTools.BeginContents();
-			NGUIEditorTools.SetLabelWidth(110f);
 
 			GUI.changed = false;
-
+			AnimationCurve curve = EditorGUILayout.CurveField("Animation Curve", tw.animationCurve);
 			UITweener.Style style = (UITweener.Style)EditorGUILayout.EnumPopup("Play Style", tw.style);
-			AnimationCurve curve = EditorGUILayout.CurveField("Animation Curve", tw.animationCurve, GUILayout.Width(170f), GUILayout.Height(62f));
 			//UITweener.Method method = (UITweener.Method)EditorGUILayout.EnumPopup("Play Method", tw.method);
 
 			GUILayout.BeginHorizontal();
-			float dur = EditorGUILayout.FloatField("Duration", tw.duration, GUILayout.Width(170f));
+			float dur = EditorGUILayout.FloatField("Duration", tw.duration, GUILayout.Width(160f));
 			GUILayout.Label("seconds");
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
-			float del = EditorGUILayout.FloatField("Start Delay", tw.delay, GUILayout.Width(170f));
+			float del = EditorGUILayout.FloatField("Start Delay", tw.delay, GUILayout.Width(160f));
 			GUILayout.Label("seconds");
 			GUILayout.EndHorizontal();
 
-			int tg = EditorGUILayout.IntField("Tween Group", tw.tweenGroup, GUILayout.Width(170f));
+			int tg = EditorGUILayout.IntField("Tween Group", tw.tweenGroup, GUILayout.Width(160f));
 			bool ts = EditorGUILayout.Toggle("Ignore TimeScale", tw.ignoreTimeScale);
 
 			if (GUI.changed)
@@ -55,7 +53,7 @@ public class UITweenerEditor : Editor
 				tw.tweenGroup = tg;
 				tw.duration = dur;
 				tw.delay = del;
-				NGUITools.SetDirty(tw);
+				UnityEditor.EditorUtility.SetDirty(tw);
 			}
 			NGUIEditorTools.EndContents();
 		}

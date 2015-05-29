@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 #if !UNITY_3_5 && !UNITY_FLASH
@@ -145,11 +145,8 @@ public class UICreateWidgetWizard : EditorWindow
 
 	void OnSelectAtlas (Object obj)
 	{
-		if (NGUISettings.atlas != obj)
-		{
-			NGUISettings.atlas = obj as UIAtlas;
-			Repaint();
-		}
+		NGUISettings.atlas = obj as UIAtlas;
+		Repaint();
 	}
 
 	/// <summary>
@@ -158,13 +155,8 @@ public class UICreateWidgetWizard : EditorWindow
 
 	void OnSelectFont (Object obj)
 	{
-		Object fnt = obj as UIFont;
-
-		if (NGUISettings.ambigiousFont != fnt)
-		{
-			NGUISettings.ambigiousFont = fnt;
-			Repaint();
-		}
+		NGUISettings.ambigiousFont = obj as UIFont;
+		Repaint();
 	}
 
 	/// <summary>
@@ -241,14 +233,7 @@ public class UICreateWidgetWizard : EditorWindow
 		}
 	}
 
-	void OnSprite (string val)
-	{
-		if (NGUISettings.selectedSprite != val)
-		{
-			NGUISettings.selectedSprite = val;
-			Repaint();
-		}
-	}
+	void OnSprite (string val) { NGUISettings.selectedSprite = val; Repaint(); }
 
 	/// <summary>
 	/// UI Texture doesn't do anything other than creating the widget.
@@ -723,9 +708,9 @@ public class UICreateWidgetWizard : EditorWindow
 	void OnSelectionChange () { Repaint(); }
 
 #if DYNAMIC_FONT
-	UILabelInspector.FontType mType = UILabelInspector.FontType.Unity;
+	UILabelInspector.FontType mType = UILabelInspector.FontType.Dynamic;
 #else
-	UILabelInspector.FontType mType = UILabelInspector.FontType.Unity;
+	UILabelInspector.FontType mType = UILabelInspector.FontType.Bitmap;
 #endif
 
 	void OnFont (Object obj) { NGUISettings.ambigiousFont = obj; }
@@ -743,9 +728,9 @@ public class UICreateWidgetWizard : EditorWindow
 			Load();
 #if DYNAMIC_FONT
 			Object font = NGUISettings.ambigiousFont;
-			mType = ((font != null) && (font is UIFont)) ? UILabelInspector.FontType.NGUI : UILabelInspector.FontType.Unity;
+			mType = ((font != null) && (font is UIFont)) ? UILabelInspector.FontType.Bitmap : UILabelInspector.FontType.Dynamic;
 #else
-			mType = UILabelInspector.FontType.NGUI;
+			mType = UILabelInspector.FontType.Bitmap;
 #endif
 		}
 
@@ -774,20 +759,20 @@ public class UICreateWidgetWizard : EditorWindow
 
 			if (NGUIEditorTools.DrawPrefixButton("Font"))
 			{
-				if (mType == UILabelInspector.FontType.NGUI)
+				if (mType == UILabelInspector.FontType.Bitmap)
 				{
 					ComponentSelector.Show<UIFont>(OnFont);
 				}
 				else
 				{
-					ComponentSelector.Show<Font>(OnFont, new string[] { ".ttf", ".otf" });
+					ComponentSelector.Show<Font>(OnFont);
 				}
 			}
 
 #if DYNAMIC_FONT
 			GUI.changed = false;
 
-			if (mType == UILabelInspector.FontType.Unity)
+			if (mType == UILabelInspector.FontType.Dynamic)
 			{
 				NGUISettings.ambigiousFont = EditorGUILayout.ObjectField(NGUISettings.ambigiousFont, typeof(Font), false, GUILayout.Width(140f));
 			}
@@ -800,7 +785,7 @@ public class UICreateWidgetWizard : EditorWindow
 			NGUISettings.ambigiousFont = EditorGUILayout.ObjectField(NGUISettings.ambigiousFont, typeof(UIFont), false, GUILayout.Width(140f));
 #endif
 			GUILayout.Label("size", GUILayout.Width(30f));
-			EditorGUI.BeginDisabledGroup(mType == UILabelInspector.FontType.NGUI);
+			EditorGUI.BeginDisabledGroup(mType == UILabelInspector.FontType.Bitmap);
 			NGUISettings.fontSize = EditorGUILayout.IntField(NGUISettings.fontSize, GUILayout.Width(30f));
 			EditorGUI.EndDisabledGroup();
 			GUILayout.Label("font used by the labels");

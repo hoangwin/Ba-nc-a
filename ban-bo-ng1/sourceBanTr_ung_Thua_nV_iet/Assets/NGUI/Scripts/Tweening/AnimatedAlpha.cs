@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -9,23 +9,21 @@ using UnityEngine;
 /// Makes it possible to animate alpha of the widget or a panel.
 /// </summary>
 
-[ExecuteInEditMode]
 public class AnimatedAlpha : MonoBehaviour
 {
-	[Range(0f, 1f)]
 	public float alpha = 1f;
 
 	UIWidget mWidget;
 	UIPanel mPanel;
-
-	void OnEnable ()
+	
+	void Awake ()
 	{
 		mWidget = GetComponent<UIWidget>();
 		mPanel = GetComponent<UIPanel>();
-		LateUpdate();
+		Update();
 	}
 
-	void LateUpdate ()
+	void Update ()
 	{
 		if (mWidget != null) mWidget.alpha = alpha;
 		if (mPanel != null) mPanel.alpha = alpha;

@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -12,23 +12,25 @@ using UnityEngine;
 [AddComponentMenu("NGUI/Interaction/Center Scroll View on Click")]
 public class UICenterOnClick : MonoBehaviour
 {
+	UIPanel mPanel;
+	UICenterOnChild mCenter;
+
+	void Start ()
+	{
+		mCenter = NGUITools.FindInParents<UICenterOnChild>(gameObject);
+		mPanel = NGUITools.FindInParents<UIPanel>(gameObject);
+	}
+
 	void OnClick ()
 	{
-		UICenterOnChild center = NGUITools.FindInParents<UICenterOnChild>(gameObject);
-		UIPanel panel = NGUITools.FindInParents<UIPanel>(gameObject);
-
-		if (center != null)
+		if (mCenter != null)
 		{
-			if (center.enabled)
-				center.CenterOn(transform);
+			if (mCenter.enabled)
+				mCenter.CenterOn(transform);
 		}
-		else if (panel != null && panel.clipping != UIDrawCall.Clipping.None)
+		else if (mPanel != null && mPanel.clipping != UIDrawCall.Clipping.None)
 		{
-			UIScrollView sv = panel.GetComponent<UIScrollView>();
-			Vector3 offset = -panel.cachedTransform.InverseTransformPoint(transform.position);
-			if (!sv.canMoveHorizontally) offset.x = panel.cachedTransform.localPosition.x;
-			if (!sv.canMoveVertically) offset.y = panel.cachedTransform.localPosition.y;
-			SpringPanel.Begin(panel.cachedGameObject, offset, 6f);
+			SpringPanel.Begin(mPanel.cachedGameObject, mPanel.cachedTransform.InverseTransformPoint(transform.position), 6f);
 		}
 	}
 }

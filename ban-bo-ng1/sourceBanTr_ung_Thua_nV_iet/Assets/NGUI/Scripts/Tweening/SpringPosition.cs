@@ -1,10 +1,9 @@
-//----------------------------------------------
+﻿//----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
 /// Spring-like motion -- the farther away the object is from the target, the stronger the pull.
@@ -13,7 +12,7 @@ using System.Collections.Generic;
 [AddComponentMenu("NGUI/Tween/Spring Position")]
 public class SpringPosition : MonoBehaviour
 {
-	static public SpringPosition current;
+	public delegate void OnFinished (SpringPosition spring);
 
 	/// <summary>
 	/// Target position to tween to.
@@ -22,7 +21,7 @@ public class SpringPosition : MonoBehaviour
 	public Vector3 target = Vector3.zero;
 
 	/// <summary>
-	/// Strength of the spring. The higher the value, the faster the movement.
+	/// How strong is the pull of the spring. Higher value means it gets to the target faster.
 	/// </summary>
 
 	public float strength = 10f;
@@ -40,12 +39,16 @@ public class SpringPosition : MonoBehaviour
 	public bool ignoreTimeScale = false;
 
 	/// <summary>
-	/// Whether the parent scroll view will be updated as the object moves.
+	/// Game object on which to call the callback function.
 	/// </summary>
 
-	public bool updateScrollView = false;
+	public GameObject eventReceiver;
 
-	public delegate void OnFinished ();
+	/// <summary>
+	/// Function to call when the spring finishes moving.
+	/// </summary>
+
+	public string callWhenFinished;
 
 	/// <summary>
 	/// Delegate to trigger when the spring finishes.
@@ -53,23 +56,14 @@ public class SpringPosition : MonoBehaviour
 
 	public OnFinished onFinished;
 
-	// Deprecated functionality
-	[SerializeField][HideInInspector] GameObject eventReceiver = null;
-	[SerializeField][HideInInspector] public string callWhenFinished;
-
 	Transform mTrans;
 	float mThreshold = 0f;
-	UIScrollView mSv;
 
 	/// <summary>
 	/// Cache the transform.
 	/// </summary>
 
-	void Start ()
-	{
-		mTrans = transform;
-		if (updateScrollView) mSv = NGUITools.FindInParents<UIScrollView>(gameObject);
-	}
+	void Start () { mTrans = transform; }
 
 	/// <summary>
 	/// Advance toward the target position.
@@ -81,47 +75,40 @@ public class SpringPosition : MonoBehaviour
 
 		if (worldSpace)
 		{
-			if (mThreshold == 0f) mThreshold = (target - mTrans.position).sqrMagnitude * 0.001f;
+			if (mThreshold == 0f) mThreshold = (target - mTrans.position).magnitude * 0.001f;
 			mTrans.position = NGUIMath.SpringLerp(mTrans.position, target, strength, delta);
 
-			if (mThreshold >= (target - mTrans.position).sqrMagnitude)
+			if (mThreshold >= (target - mTrans.position).magnitude)
 			{
 				mTrans.position = target;
-				NotifyListeners();
+				
+				if (onFinished != null) onFinished(this);
+				
+				if (eventReceiver != null && !string.IsNullOrEmpty(callWhenFinished))
+				{
+					eventReceiver.SendMessage(callWhenFinished, this, SendMessageOptions.DontRequireReceiver);
+				}
 				enabled = false;
 			}
 		}
 		else
 		{
-			if (mThreshold == 0f) mThreshold = (target - mTrans.localPosition).sqrMagnitude * 0.00001f;
+			if (mThreshold == 0f) mThreshold = (target - mTrans.localPosition).magnitude * 0.001f;
 			mTrans.localPosition = NGUIMath.SpringLerp(mTrans.localPosition, target, strength, delta);
 
-			if (mThreshold >= (target - mTrans.localPosition).sqrMagnitude)
+			if (mThreshold >= (target - mTrans.localPosition).magnitude)
 			{
 				mTrans.localPosition = target;
-				NotifyListeners();
+				
+				if (onFinished != null) onFinished(this);
+
+				if (eventReceiver != null && !string.IsNullOrEmpty(callWhenFinished))
+				{
+					eventReceiver.SendMessage(callWhenFinished, this, SendMessageOptions.DontRequireReceiver);
+				}
 				enabled = false;
 			}
 		}
-
-		// Ensure that the scroll bars remain in sync
-		if (mSv != null) mSv.UpdateScrollbars(true);
-	}
-
-	/// <summary>
-	/// Notify all finished event listeners.
-	/// </summary>
-
-	void NotifyListeners ()
-	{
-		current = this;
-
-		if (onFinished != null) onFinished();
-
-		if (eventReceiver != null && !string.IsNullOrEmpty(callWhenFinished))
-			eventReceiver.SendMessage(callWhenFinished, this, SendMessageOptions.DontRequireReceiver);
-
-		current = null;
 	}
 
 	/// <summary>

@@ -1,7 +1,9 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
+
+#if !UNITY_3_5 && !UNITY_4_0 && !UNITY_4_1 && !UNITY_4_2
 
 using UnityEngine;
 using UnityEditor;
@@ -12,8 +14,8 @@ using System.Collections.Generic;
 /// </summary>
 
 [CanEditMultipleObjects]
-[CustomEditor(typeof(UI2DSprite), true)]
-public class UI2DSpriteEditor : UIBasicSpriteEditor
+[CustomEditor(typeof(UI2DSprite))]
+public class UI2DSpriteEditor : UIWidgetInspector
 {
 	UI2DSprite mSprite;
 
@@ -23,25 +25,9 @@ public class UI2DSpriteEditor : UIBasicSpriteEditor
 		mSprite = target as UI2DSprite;
 	}
 
-	/// <summary>
-	/// Should we draw the widget's custom properties?
-	/// </summary>
-
 	protected override bool ShouldDrawProperties ()
 	{
-		GUI.changed = false;
 		SerializedProperty sp = NGUIEditorTools.DrawProperty("2D Sprite", serializedObject, "mSprite");
-		
-		if (GUI.changed)
-		{
-			UnityEngine.Sprite sprite = sp.objectReferenceValue as Sprite;
-
-			if (sprite != null)
-			{
-				SerializedProperty border = serializedObject.FindProperty("mBorder");
-				border.vector4Value = sprite.border;
-			}
-		}
 
 		NGUISettings.sprite2D = sp.objectReferenceValue as Sprite;
 
@@ -50,18 +36,6 @@ public class UI2DSpriteEditor : UIBasicSpriteEditor
 		if (mSprite.material == null || serializedObject.isEditingMultipleObjects)
 		{
 			NGUIEditorTools.DrawProperty("Shader", serializedObject, "mShader");
-		}
-
-		NGUIEditorTools.DrawProperty("Pixel Size", serializedObject, "mPixelSize");
-
-		SerializedProperty fa = serializedObject.FindProperty("mFixedAspect");
-		bool before = fa.boolValue;
-		NGUIEditorTools.DrawProperty("Fixed Aspect", fa);
-		if (fa.boolValue != before) (target as UIWidget).drawRegion = new Vector4(0f, 0f, 1f, 1f);
-
-		if (fa.boolValue)
-		{
-			EditorGUILayout.HelpBox("Note that Fixed Aspect mode is not compatible with Draw Region modifications done by sliders and progress bars.", MessageType.Info);
 		}
 		return (sp.objectReferenceValue != null);
 	}
@@ -72,8 +46,7 @@ public class UI2DSpriteEditor : UIBasicSpriteEditor
 
 	public override bool HasPreviewGUI ()
 	{
-		return (Selection.activeGameObject == null || Selection.gameObjects.Length == 1) &&
-			(mSprite != null) && (mSprite.mainTexture as Texture2D != null);
+		return (mSprite != null) && (mSprite.mainTexture as Texture2D != null);
 	}
 
 	/// <summary>
@@ -85,7 +58,8 @@ public class UI2DSpriteEditor : UIBasicSpriteEditor
 		if (mSprite != null && mSprite.sprite2D != null)
 		{
 			Texture2D tex = mSprite.mainTexture as Texture2D;
-			if (tex != null) NGUIEditorTools.DrawSprite(tex, rect, mSprite.color, mSprite.sprite2D.textureRect, mSprite.border);
+			if (tex != null) NGUIEditorTools.DrawTexture(tex, rect, mSprite.uvRect, mSprite.color);
 		}
 	}
 }
+#endif

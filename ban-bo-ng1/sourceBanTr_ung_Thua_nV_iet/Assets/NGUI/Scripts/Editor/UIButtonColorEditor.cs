@@ -1,86 +1,73 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
 using UnityEditor;
 
-#if UNITY_3_5
 [CustomEditor(typeof(UIButtonColor))]
-#else
-[CustomEditor(typeof(UIButtonColor), true)]
-#endif
 public class UIButtonColorEditor : UIWidgetContainerEditor
 {
 	public override void OnInspectorGUI ()
 	{
+		NGUIEditorTools.SetLabelWidth(80f);
+		UIButtonColor button = target as UIButtonColor;
+
 		GUILayout.Space(6f);
-		NGUIEditorTools.SetLabelWidth(86f);
 
-		serializedObject.Update();
-		NGUIEditorTools.DrawProperty("Tween Target", serializedObject, "tweenTarget");
-		DrawProperties();
-		serializedObject.ApplyModifiedProperties();
+		GUI.changed = false;
+		GameObject tt = (GameObject)EditorGUILayout.ObjectField("Target", button.tweenTarget, typeof(GameObject), true);
 
-		if (target.GetType() == typeof(UIButtonColor))
+		if (GUI.changed)
 		{
-			GUILayout.Space(3f);
-
-			if (GUILayout.Button("Upgrade to a Button"))
-			{
-				NGUIEditorTools.ReplaceClass(serializedObject, typeof(UIButton));
-				Selection.activeGameObject = null;
-			}
+			NGUIEditorTools.RegisterUndo("Button Change", button);
+			button.tweenTarget = tt;
+			UnityEditor.EditorUtility.SetDirty(button);
 		}
-	}
 
-	protected virtual void DrawProperties ()
-	{
-		DrawTransition();
-		DrawColors();
-	}
-
-	protected void DrawColors ()
-	{
-		if (serializedObject.FindProperty("tweenTarget").objectReferenceValue == null) return;
-
-		if (NGUIEditorTools.DrawHeader("Colors", "Colors", false, true))
+		if (tt != null)
 		{
-			NGUIEditorTools.BeginContents(true);
-			NGUIEditorTools.SetLabelWidth(76f);
-			UIButtonColor btn = target as UIButtonColor;
+			UIWidget w = tt.GetComponent<UIWidget>();
 
-			if (btn.tweenTarget != null)
+			if (w != null)
 			{
-				UIWidget widget = btn.tweenTarget.GetComponent<UIWidget>();
+				GUI.changed = false;
+				Color c = EditorGUILayout.ColorField("Normal", w.color);
 
-				if (widget != null)
+				if (GUI.changed)
 				{
-					EditorGUI.BeginDisabledGroup(serializedObject.isEditingMultipleObjects);
-					{
-						SerializedObject obj = new SerializedObject(widget);
-						obj.Update();
-						NGUIEditorTools.DrawProperty("Normal", obj, "mColor");
-						obj.ApplyModifiedProperties();
-					}
-					EditorGUI.EndDisabledGroup();
+					NGUIEditorTools.RegisterUndo("Button Change", w);
+					w.color = c;
+					UnityEditor.EditorUtility.SetDirty(w);
 				}
 			}
-
-			NGUIEditorTools.DrawProperty("Hover", serializedObject, "hover");
-			NGUIEditorTools.DrawProperty("Pressed", serializedObject, "pressed");
-			NGUIEditorTools.DrawProperty("Disabled", serializedObject, "disabledColor");
-			NGUIEditorTools.EndContents();
 		}
-	}
 
-	protected void DrawTransition ()
-	{
+		GUI.changed = false;
+		Color hover = EditorGUILayout.ColorField("Hover", button.hover);
+		Color pressed = EditorGUILayout.ColorField("Pressed", button.pressed);
+
 		GUILayout.BeginHorizontal();
-		NGUIEditorTools.DrawProperty("Transition", serializedObject, "duration", GUILayout.Width(120f));
+		float duration = EditorGUILayout.FloatField("Duration", button.duration, GUILayout.Width(120f));
 		GUILayout.Label("seconds");
 		GUILayout.EndHorizontal();
+
 		GUILayout.Space(3f);
+
+		if (GUI.changed)
+		{
+			NGUIEditorTools.RegisterUndo("Button Change", button);
+			button.hover = hover;
+			button.pressed = pressed;
+			button.duration = duration;
+			UnityEditor.EditorUtility.SetDirty(button);
+		}
+
+		if (GUILayout.Button("Upgrade to a Button"))
+		{
+			NGUIEditorTools.ReplaceClass(serializedObject, typeof(UIButton));
+			Selection.activeGameObject = null;
+		}
 	}
 }

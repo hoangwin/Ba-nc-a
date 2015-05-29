@@ -18,12 +18,12 @@ public class ButtonControl : MonoBehaviour {
 		Application.LoadLevel("SelectLevel");
 	
 	}
-	public void EndlessButtonPress()
+    public void MoreGame()
 	{
         //SoundEngine.playSound("SoundClick");
 		//Application.LoadLevel("GamePlayScence");
         //Application.LoadLevel("About");
-        Application.OpenURL("market://details?id=org.xiaxio.bubbleshoot");
+        Application.OpenURL("http://aegamemobile.com");
 	}
     public void ExitButtonPress()
     {
@@ -51,26 +51,12 @@ public class ButtonControl : MonoBehaviour {
 		//Application.LoadLevel("GamePlayScence");
 		//Debug.Log ("aaaaaaaaaa");
 	}
-
-    public void ButtonRatePress()
-    {
-        SoundEngine.playSound("SoundClick");
-        Application.OpenURL("market://details?id=com.flappy.bird.kiwi");
-        //Application.OpenURL ("http://details?id=com.flappy.bird.kiwi");
-    }
-
-    public void ButtonMoreGamePress()
+	public void ButtonRatePress()
 	{
         SoundEngine.playSound("SoundClick");
-#if UNITY_ANDROID
-        Application.OpenURL("market://details?id=com.bubbleshoot2.free");
-#elif UNITY_WP8
-        Application.OpenURL("http://www.windowsphone.com/en-us/store/app/bubble-shooter-free/d0a6bf42-23f9-42c8-aafd-c260a9edf072");
-#elif UNITY_IOS
-        Application.OpenURL("market://details?id=com.bubbleshoot2.free");
-#endif
-
-    }
+		Application.OpenURL ("market://details?id=com.flappy.bird.kiwi");
+		//Application.OpenURL ("http://details?id=com.flappy.bird.kiwi");
+	}
 	public void RankingButtonPress()
 	{
         SoundEngine.playSound("SoundClick");

@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -50,20 +50,13 @@ public class UIScrollBar : UISlider
 				mSize = val;
 				mIsDirty = true;
 
-				if (NGUITools.GetActive(this))
+				if (onChange != null)
 				{
-					if (current == null && onChange != null)
-					{
-						current = this;
-						EventDelegate.Execute(onChange);
-						current = null;
-					}
-					ForceUpdate();
-#if UNITY_EDITOR
-					if (!Application.isPlaying)
-						NGUITools.SetDirty(this);
-#endif
+					current = this;
+					EventDelegate.Execute(onChange);
+					current = null;
 				}
+				if (!Application.isPlaying) ForceUpdate();
 			}
 		}
 	}
@@ -88,7 +81,7 @@ public class UIScrollBar : UISlider
 			}
 			mDir = Direction.Upgraded;
 #if UNITY_EDITOR
-			NGUITools.SetDirty(this);
+			UnityEditor.EditorUtility.SetDirty(this);
 #endif
 		}
 	}
@@ -101,15 +94,8 @@ public class UIScrollBar : UISlider
 	{
 		base.OnStart();
 
-		if (mFG != null && mFG.gameObject != gameObject)
+		if (mFG != null && mFG.collider != null && mFG.gameObject != gameObject)
 		{
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
-			bool hasCollider = (mFG.collider != null) || (mFG.GetComponent<Collider2D>() != null);
-#else
-			bool hasCollider = (mFG.GetComponent<Collider>() != null) || (mFG.GetComponent<Collider2D>() != null);
-#endif
-			if (!hasCollider) return;
-
 			UIEventListener fgl = UIEventListener.Get(mFG.gameObject);
 			fgl.onPress += OnPressForeground;
 			fgl.onDrag += OnDragForeground;
@@ -134,23 +120,19 @@ public class UIScrollBar : UISlider
 			{
 				val0 = Mathf.Lerp(corners[0].x, corners[2].x, val0);
 				val1 = Mathf.Lerp(corners[0].x, corners[2].x, val1);
-				float diff = (val1 - val0);
-				if (diff == 0f) return value;
 
 				return isInverted ?
-					(val1 - localPos.x) / diff :
-					(localPos.x - val0) / diff;
+					(val1 - localPos.x) / (val1 - val0) :
+					(localPos.x - val0) / (val1 - val0);
 			}
 			else
 			{
 				val0 = Mathf.Lerp(corners[0].y, corners[1].y, val0);
 				val1 = Mathf.Lerp(corners[3].y, corners[2].y, val1);
-				float diff = (val1 - val0);
-				if (diff == 0f) return value;
 
 				return isInverted ?
-					(val1 - localPos.y) / diff :
-					(localPos.y - val0) / diff;
+					(val1 - localPos.y) / (val1 - val0) :
+					(localPos.y - val0) / (val1 - val0);
 			}
 		}
 		return base.LocalToValue(localPos);

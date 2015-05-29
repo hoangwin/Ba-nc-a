@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -34,17 +34,6 @@ public abstract class UIRect : MonoBehaviour
 
 		public void Set (float relative, float absolute)
 		{
-			this.relative = relative;
-			this.absolute = Mathf.FloorToInt(absolute + 0.5f);
-		}
-
-		/// <summary>
-		/// Convenience function that sets the anchor's values.
-		/// </summary>
-
-		public void Set (Transform target, float relative, float absolute)
-		{
-			this.target = target;
 			this.relative = relative;
 			this.absolute = Mathf.FloorToInt(absolute + 0.5f);
 		}
@@ -119,11 +108,7 @@ public abstract class UIRect : MonoBehaviour
 			if (target != null)
 			{
 				if (rect != null) return rect.GetSides(relativeTo);
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
 				if (target.camera != null) return target.camera.GetSides(relativeTo);
-#else
-				if (target.GetComponent<Camera>() != null) return target.GetComponent<Camera>().GetSides(relativeTo);
-#endif
 			}
 			return null;
 		}
@@ -153,39 +138,19 @@ public abstract class UIRect : MonoBehaviour
 
 	public AnchorPoint topAnchor = new AnchorPoint(1f);
 
-	public enum AnchorUpdate
-	{
-		OnEnable,
-		OnUpdate,
-		OnStart,
-	}
-
-	/// <summary>
-	/// Whether anchors will be recalculated on every update.
-	/// </summary>
-
-	public AnchorUpdate updateAnchors = AnchorUpdate.OnUpdate;
-
 	protected GameObject mGo;
 	protected Transform mTrans;
 	protected BetterList<UIRect> mChildren = new BetterList<UIRect>();
 	protected bool mChanged = true;
-	protected bool mStarted = false;
-	protected bool mParentFound = false;
+	protected float mFinalAlpha = 0f;
 
-	[System.NonSerialized] bool mUpdateAnchors = true;
-	[System.NonSerialized] int mUpdateFrame = -1;
-	[System.NonSerialized] bool mAnchorsCached = false;
-	[System.NonSerialized] UIRoot mRoot;
-	[System.NonSerialized] UIRect mParent;
-	[System.NonSerialized] bool mRootSet = false;
-	[System.NonSerialized] protected Camera mCam;
-
-	/// <summary>
-	/// Final calculated alpha.
-	/// </summary>
-
-	[System.NonSerialized] public float finalAlpha = 1f;
+	UIRoot mRoot;
+	UIRect mParent;
+	Camera mMyCam;
+	int mUpdateFrame = -1;
+	bool mAnchorsCached = false;
+	bool mParentFound = false;
+	bool mRootSet = false;
 
 	/// <summary>
 	/// Game object gets cached for speed. Can't simply return 'mGo' set in Awake because this function may be called on a prefab.
@@ -203,31 +168,7 @@ public abstract class UIRect : MonoBehaviour
 	/// Camera used by anchors.
 	/// </summary>
 
-	public Camera anchorCamera { get { if (!mAnchorsCached) ResetAnchors(); return mCam; } }
-
-	/// <summary>
-	/// Whether the rectangle is currently anchored fully on all sides.
-	/// </summary>
-
-	public bool isFullyAnchored { get { return leftAnchor.target && rightAnchor.target && topAnchor.target && bottomAnchor.target; } }
-
-	/// <summary>
-	/// Whether the rectangle is anchored horizontally.
-	/// </summary>
-
-	public virtual bool isAnchoredHorizontally { get { return leftAnchor.target || rightAnchor.target; } }
-
-	/// <summary>
-	/// Whether the rectangle is anchored vertically.
-	/// </summary>
-
-	public virtual bool isAnchoredVertically { get { return bottomAnchor.target || topAnchor.target; } }
-
-	/// <summary>
-	/// Whether the rectangle can be anchored.
-	/// </summary>
-
-	public virtual bool canBeAnchored { get { return true; } }
+	public Camera anchorCamera { get { if (!mAnchorsCached) ResetAnchors(); return mMyCam; } }
 
 	/// <summary>
 	/// Get the rectangle's parent, if any.
@@ -273,7 +214,7 @@ public abstract class UIRect : MonoBehaviour
 	{
 		get
 		{
-			return (leftAnchor.target || rightAnchor.target || topAnchor.target || bottomAnchor.target) && canBeAnchored;
+			return leftAnchor.target || rightAnchor.target || topAnchor.target || bottomAnchor.target;
 		}
 	}
 
@@ -284,10 +225,10 @@ public abstract class UIRect : MonoBehaviour
 	public abstract float alpha { get; set; }
 
 	/// <summary>
-	/// Get the final cumulative alpha.
+	/// Alpha property is exposed so that it's possible to make it cumulative.
 	/// </summary>
 
-	public abstract float CalculateFinalAlpha (int frameID);
+	public abstract float finalAlpha { get; }
 
 	/// <summary>
 	/// Local-space corners of the UI rectangle. The order is bottom-left, top-left, top-right, bottom-right.
@@ -302,37 +243,10 @@ public abstract class UIRect : MonoBehaviour
 	public abstract Vector3[] worldCorners { get; }
 
 	/// <summary>
-	/// Helper function that returns the distance to the camera's directional vector hitting the panel's plane.
-	/// </summary>
-
-	protected float cameraRayDistance
-	{
-		get
-		{
-			if (anchorCamera == null) return 0f;
-
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
-			if (!mCam.isOrthoGraphic)
-#else
-			if (!mCam.orthographic)
-#endif
-			{
-				Transform t = cachedTransform;
-				Transform ct = mCam.transform;
-				Plane p = new Plane(t.rotation * Vector3.back, t.position);
-				Ray ray = new Ray(ct.position, ct.rotation * Vector3.forward);
-				float dist;
-				if (p.Raycast(ray, out dist)) return dist;
-			}
-			return Mathf.Lerp(mCam.nearClipPlane, mCam.farClipPlane, 0.5f);
-		}
-	}
-
-	/// <summary>
 	/// Sets the local 'changed' flag, indicating that some parent value(s) are now be different, such as alpha for example.
 	/// </summary>
 
-	public virtual void Invalidate (bool includeChildren)
+	public void Invalidate (bool includeChildren)
 	{
 		mChanged = true;
 		if (includeChildren)
@@ -341,7 +255,7 @@ public abstract class UIRect : MonoBehaviour
 	}
 
 	// Temporary variable to avoid GC allocation
-	static protected Vector3[] mSides = new Vector3[4];
+	static Vector3[] mSides = new Vector3[4];
 
 	/// <summary>
 	/// Get the sides of the rectangle relative to the specified transform.
@@ -350,18 +264,23 @@ public abstract class UIRect : MonoBehaviour
 
 	public virtual Vector3[] GetSides (Transform relativeTo)
 	{
-		if (anchorCamera != null) return mCam.GetSides(cameraRayDistance, relativeTo);
-		
-		Vector3 pos = cachedTransform.position;
-		for (int i = 0; i < 4; ++i)
-			mSides[i] = pos;
-
-		if (relativeTo != null)
+		if (anchorCamera != null)
 		{
-			for (int i = 0; i < 4; ++i)
-				mSides[i] = relativeTo.InverseTransformPoint(mSides[i]);
+			return anchorCamera.GetSides(relativeTo);
 		}
-		return mSides;
+		else
+		{
+			Vector3 pos = cachedTransform.position;
+			for (int i = 0; i < 4; ++i)
+				mSides[i] = pos;
+
+			if (relativeTo != null)
+			{
+				for (int i = 0; i < 4; ++i)
+					mSides[i] = relativeTo.InverseTransformPoint(mSides[i]);
+			}
+			return mSides;
+		}
 	}
 
 	/// <summary>
@@ -373,45 +292,18 @@ public abstract class UIRect : MonoBehaviour
 		if (anchorCamera == null || ac.targetCam == null)
 			return cachedTransform.localPosition;
 
-		Rect rect = ac.targetCam.rect;
-		Vector3 viewPos = ac.targetCam.WorldToViewportPoint(ac.target.position);
-		Vector3 pos = new Vector3((viewPos.x * rect.width) + rect.x, (viewPos.y * rect.height) + rect.y, viewPos.z);
-		pos = mCam.ViewportToWorldPoint(pos);
+		Vector3 pos = mMyCam.ViewportToWorldPoint(ac.targetCam.WorldToViewportPoint(ac.target.position));
 		if (trans != null) pos = trans.InverseTransformPoint(pos);
 		pos.x = Mathf.Floor(pos.x + 0.5f);
 		pos.y = Mathf.Floor(pos.y + 0.5f);
 		return pos;
 	}
 
-#if UNITY_EDITOR
-	[System.NonSerialized] bool mEnabled = false;
-#endif
-
 	/// <summary>
 	/// Automatically find the parent rectangle.
 	/// </summary>
 
 	protected virtual void OnEnable ()
-	{
-#if UNITY_EDITOR
-		mEnabled = true;
-#endif
-		mUpdateFrame = -1;
-		
-		if (updateAnchors == AnchorUpdate.OnEnable)
-		{
-			mAnchorsCached = false;
-			mUpdateAnchors = true;
-		}
-		if (mStarted) OnInit();
-		mUpdateFrame = -1;
-	}
-
-	/// <summary>
-	/// Automatically find the parent rectangle.
-	/// </summary>
-
-	protected virtual void OnInit ()
 	{
 		mChanged = true;
 		mRootSet = false;
@@ -425,9 +317,6 @@ public abstract class UIRect : MonoBehaviour
 
 	protected virtual void OnDisable ()
 	{
-#if UNITY_EDITOR
-		mEnabled = false;
-#endif
 		if (mParent) mParent.mChildren.Remove(this);
 		mParent = null;
 		mRoot = null;
@@ -439,12 +328,7 @@ public abstract class UIRect : MonoBehaviour
 	/// Set anchor rect references on start.
 	/// </summary>
 
-	protected void Start ()
-	{
-		mStarted = true;
-		OnInit();
-		OnStart();
-	}
+	protected void Start () { OnStart(); }
 
 	/// <summary>
 	/// Rectangles need to update in a specific order -- parents before children.
@@ -457,54 +341,41 @@ public abstract class UIRect : MonoBehaviour
 
 		int frame = Time.frameCount;
 
-#if UNITY_EDITOR
-		if (mUpdateFrame != frame || !Application.isPlaying)
-#else
 		if (mUpdateFrame != frame)
-#endif
 		{
-#if UNITY_EDITOR
-			if (updateAnchors == AnchorUpdate.OnUpdate || mUpdateAnchors || !Application.isPlaying)
-#else
-			if (updateAnchors == AnchorUpdate.OnUpdate || mUpdateAnchors)
-#endif
+			mUpdateFrame = frame;
+			bool anchored = false;
+
+			if (leftAnchor.target)
 			{
-				mUpdateFrame = frame;
-				mUpdateAnchors = false;
-
-				bool anchored = false;
-
-				if (leftAnchor.target)
-				{
-					anchored = true;
-					if (leftAnchor.rect != null && leftAnchor.rect.mUpdateFrame != frame)
-						leftAnchor.rect.Update();
-				}
-
-				if (bottomAnchor.target)
-				{
-					anchored = true;
-					if (bottomAnchor.rect != null && bottomAnchor.rect.mUpdateFrame != frame)
-						bottomAnchor.rect.Update();
-				}
-
-				if (rightAnchor.target)
-				{
-					anchored = true;
-					if (rightAnchor.rect != null && rightAnchor.rect.mUpdateFrame != frame)
-						rightAnchor.rect.Update();
-				}
-
-				if (topAnchor.target)
-				{
-					anchored = true;
-					if (topAnchor.rect != null && topAnchor.rect.mUpdateFrame != frame)
-						topAnchor.rect.Update();
-				}
-
-				// Update the dimensions using anchors
-				if (anchored) OnAnchor();
+				anchored = true;
+				if (leftAnchor.rect != null && leftAnchor.rect.mUpdateFrame != frame)
+					leftAnchor.rect.Update();
 			}
+
+			if (bottomAnchor.target)
+			{
+				anchored = true;
+				if (bottomAnchor.rect != null && bottomAnchor.rect.mUpdateFrame != frame)
+					bottomAnchor.rect.Update();
+			}
+
+			if (rightAnchor.target)
+			{
+				anchored = true;
+				if (rightAnchor.rect != null && rightAnchor.rect.mUpdateFrame != frame)
+					rightAnchor.rect.Update();
+			}
+
+			if (topAnchor.target)
+			{
+				anchored = true;
+				if (topAnchor.rect != null && topAnchor.rect.mUpdateFrame != frame)
+					topAnchor.rect.Update();
+			}
+
+			// Update the dimensions using anchors
+			if (anchored) OnAnchor();
 
 			// Continue with the update
 			OnUpdate();
@@ -515,74 +386,13 @@ public abstract class UIRect : MonoBehaviour
 	/// Manually update anchored sides.
 	/// </summary>
 
-	public void UpdateAnchors () { if (isAnchored && updateAnchors != AnchorUpdate.OnStart) OnAnchor(); }
+	public void UpdateAnchors () { if (isAnchored) OnAnchor(); }
 
 	/// <summary>
 	/// Update the dimensions of the rectangle using anchor points.
 	/// </summary>
 
 	protected abstract void OnAnchor ();
-
-	/// <summary>
-	/// Anchor this rectangle to the specified transform.
-	/// Note that this function will not keep the rectangle's current dimensions, but will instead assume the target's dimensions.
-	/// </summary>
-
-	public void SetAnchor (Transform t)
-	{
-		leftAnchor.target = t;
-		rightAnchor.target = t;
-		topAnchor.target = t;
-		bottomAnchor.target = t;
-
-		ResetAnchors();
-		UpdateAnchors();
-	}
-
-	/// <summary>
-	/// Anchor this rectangle to the specified transform.
-	/// Note that this function will not keep the rectangle's current dimensions, but will instead assume the target's dimensions.
-	/// </summary>
-
-	public void SetAnchor (GameObject go)
-	{
-		Transform t = (go != null) ? go.transform : null;
-
-		leftAnchor.target = t;
-		rightAnchor.target = t;
-		topAnchor.target = t;
-		bottomAnchor.target = t;
-
-		ResetAnchors();
-		UpdateAnchors();
-	}
-
-	/// <summary>
-	/// Anchor this rectangle to the specified transform.
-	/// </summary>
-
-	public void SetAnchor (GameObject go, int left, int bottom, int right, int top)
-	{
-		Transform t = (go != null) ? go.transform : null;
-
-		leftAnchor.target = t;
-		rightAnchor.target = t;
-		topAnchor.target = t;
-		bottomAnchor.target = t;
-		
-		leftAnchor.relative = 0f;
-		rightAnchor.relative = 1f;
-		bottomAnchor.relative = 0f;
-		topAnchor.relative = 1f;
-
-		leftAnchor.absolute = left;
-		rightAnchor.absolute = right;
-		bottomAnchor.absolute = bottom;
-		topAnchor.absolute = top;
-
-		ResetAnchors();
-		UpdateAnchors();
-	}
 
 	/// <summary>
 	/// Ensure that all rect references are set correctly on the anchors.
@@ -597,27 +407,13 @@ public abstract class UIRect : MonoBehaviour
 		rightAnchor.rect	= (rightAnchor.target)	? rightAnchor.target.GetComponent<UIRect>()	 : null;
 		topAnchor.rect		= (topAnchor.target)	? topAnchor.target.GetComponent<UIRect>()	 : null;
 
-		mCam = NGUITools.FindCameraForLayer(cachedGameObject.layer);
+		mMyCam = NGUITools.FindCameraForLayer(cachedGameObject.layer);
 
 		FindCameraFor(leftAnchor);
 		FindCameraFor(bottomAnchor);
 		FindCameraFor(rightAnchor);
 		FindCameraFor(topAnchor);
-
-		mUpdateAnchors = true;
 	}
-
-	/// <summary>
-	/// Convenience method that resets and updates the anchors, all at once.
-	/// </summary>
-
-	public void ResetAndUpdateAnchors () { ResetAnchors(); UpdateAnchors(); }
-
-	/// <summary>
-	/// Set the rectangle manually.
-	/// </summary>
-
-	public abstract void SetRect (float x, float y, float width, float height);
 
 	/// <summary>
 	/// Helper function -- attempt to find the camera responsible for the specified anchor.
@@ -634,6 +430,13 @@ public abstract class UIRect : MonoBehaviour
 		{
 			// Find the camera responsible for the target object
 			ap.targetCam = NGUITools.FindCameraForLayer(ap.target.gameObject.layer);
+
+			// No camera found? Clear the references
+			if (ap.targetCam == null)
+			{
+				ap.target = null;
+				return;
+			}
 		}
 	}
 
@@ -643,7 +446,6 @@ public abstract class UIRect : MonoBehaviour
 
 	public virtual void ParentHasChanged ()
 	{
-		mParentFound = false;
 		UIRect pt = NGUITools.FindInParents<UIRect>(cachedTransform.parent);
 
 		if (mParent != pt)
@@ -672,13 +474,10 @@ public abstract class UIRect : MonoBehaviour
 	/// This callback is sent inside the editor notifying us that some property has changed.
 	/// </summary>
 
-	protected virtual void OnValidate ()
+	protected virtual void OnValidate()
 	{
-		if (mEnabled && NGUITools.GetActive(this))
-		{
-			if (!Application.isPlaying) ResetAnchors();
-			Invalidate(true);
-		}
+		ResetAnchors();
+		Invalidate(true);
 	}
 #endif
 }

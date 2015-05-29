@@ -1,9 +1,9 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
-#if UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_WP_8_1 || UNITY_BLACKBERRY
+#if UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_BLACKBERRY
 #define MOBILE
 #endif
 
@@ -11,11 +11,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CanEditMultipleObjects]
-#if UNITY_3_5
 [CustomEditor(typeof(UIInput))]
-#else
-[CustomEditor(typeof(UIInput), true)]
-#endif
 public class UIInputEditor : UIWidgetContainerEditor
 {
 	public override void OnInspectorGUI ()
@@ -35,7 +31,7 @@ public class UIInputEditor : UIWidgetContainerEditor
 			if (Application.isPlaying) NGUIEditorTools.DrawPaddedProperty("Value", serializedObject, "mValue");
 			else NGUIEditorTools.DrawPaddedProperty("Starting Value", serializedObject, "mValue");
 			NGUIEditorTools.DrawPaddedProperty(serializedObject, "savedAs");
-			NGUIEditorTools.DrawProperty("Active Text Color", serializedObject, "activeTextColor");
+			NGUIEditorTools.DrawProperty("Active Text", serializedObject, "activeTextColor");
 
 			EditorGUI.BeginDisabledGroup(serializedObject.isEditingMultipleObjects);
 			{
@@ -43,23 +39,20 @@ public class UIInputEditor : UIWidgetContainerEditor
 				{
 					SerializedObject ob = new SerializedObject(label.objectReferenceValue);
 					ob.Update();
-					NGUIEditorTools.DrawProperty("Inactive Color", ob, "mColor");
+					NGUIEditorTools.DrawProperty("Inactive", ob, "mColor");
 					ob.ApplyModifiedProperties();
 				}
-				else EditorGUILayout.ColorField("Inactive Color", Color.white);
+				else EditorGUILayout.ColorField("Inactive", Color.white);
 			}
 			EditorGUI.EndDisabledGroup();
-
-			NGUIEditorTools.DrawProperty("Caret Color", serializedObject, "caretColor");
-			NGUIEditorTools.DrawProperty("Selection Color", serializedObject, "selectionColor");
+#if !MOBILE
+			NGUIEditorTools.DrawProperty(serializedObject, "selectOnTab");
+#endif
 			NGUIEditorTools.DrawPaddedProperty(serializedObject, "inputType");
+#if MOBILE
+			NGUIEditorTools.DrawPaddedProperty(serializedObject, "keyboardType");
+#endif
 			NGUIEditorTools.DrawPaddedProperty(serializedObject, "validation");
-			NGUIEditorTools.DrawPaddedProperty("Mobile Keyboard", serializedObject, "keyboardType");
-			NGUIEditorTools.DrawPaddedProperty("  Hide Input", serializedObject, "hideInput");
-			NGUIEditorTools.DrawPaddedProperty(serializedObject, "onReturnKey");
-
-			// Deprecated, use UIKeyNavigation instead.
-			//NGUIEditorTools.DrawProperty(serializedObject, "selectOnTab");
 
 			SerializedProperty sp = serializedObject.FindProperty("characterLimit");
 
@@ -68,7 +61,7 @@ public class UIInputEditor : UIWidgetContainerEditor
 			if (sp.hasMultipleDifferentValues || input.characterLimit > 0)
 			{
 				EditorGUILayout.PropertyField(sp);
-				NGUIEditorTools.DrawPadding();
+				GUILayout.Space(18f);
 			}
 			else
 			{
@@ -80,7 +73,6 @@ public class UIInputEditor : UIWidgetContainerEditor
 			NGUIEditorTools.SetLabelWidth(80f);
 			EditorGUI.BeginDisabledGroup(serializedObject.isEditingMultipleObjects);
 			NGUIEditorTools.DrawEvents("On Submit", input, input.onSubmit);
-			NGUIEditorTools.DrawEvents("On Change", input, input.onChange);
 			EditorGUI.EndDisabledGroup();
 		}
 		EditorGUI.EndDisabledGroup();

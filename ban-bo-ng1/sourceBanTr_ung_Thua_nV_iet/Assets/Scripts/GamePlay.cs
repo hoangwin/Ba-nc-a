@@ -35,15 +35,13 @@ public class GamePlay : MonoBehaviour {
 	public static bool isWin = true;
 	public UILabel LabelLevel;
 	public UILabel LabelScore;
-    public UILabel LabelScoreWin;
 
     public Animator GunnerAnim;
-
-    
-
 	void Start () {
 
 		DEF.Init();
+
+
 		instance = this;
 		//NGUITools.SetActive(PanelOverGame,false);   
 		ScoreControl.Score = 0;
@@ -89,8 +87,7 @@ public class GamePlay : MonoBehaviour {
                     Application.LoadLevel("MainMenu");
                 }
 		}        
-		//Debug.Log(currentState);
-//		Debug.Log("STate Bubble Current:" + LevelManager.currentBubble.GetComponent<Bubble>().state);
+//		Debug.Log(currentState);
 		switch (currentState) {
 			
 		
@@ -101,18 +98,15 @@ public class GamePlay : MonoBehaviour {
             LevelManager.UpdatekMoveWall();
 			break;
 		case GamePlay.STATE_WAITING_WIN_LOSE:
-              
             if (TimePlayedSubState < 2)
                 break;
-            //AdsManager.ShowADS_FULL();
+
 			if(isWin)
 			{
+
 				PanelWin.SetActive(true);
-                PanelWin.transform.position = new Vector3(0, 10, 0);
-                iTween.MoveTo(PanelWin, new Vector3(0, -1, 0), 2);
                 AdsManager.ShowADS_FULL();
-    
-                LabelScoreWin.text = ScoreControl.Score.ToString();
+                GameObject.Find("LabelScoreWin").GetComponent<UILabel>().text = ScoreControl.Score.ToString();
                 if (ScoreControl.mUnblockLevel == LevelManager.currentLevel)
                 {
                     ScoreControl.mUnblockLevel++;
@@ -145,6 +139,7 @@ public class GamePlay : MonoBehaviour {
                 ScoreControl.strLevelStar = ScoreControl.strLevelStar.Remove(LevelManager.currentLevel + 1,1);
                 //Debug.Log("LevelManager.star1:" + ScoreControl.strLevelStar);     
                 ScoreControl.saveGame();
+
 				changeState(STATE_WIN);
 			}
 			else
@@ -165,7 +160,11 @@ public class GamePlay : MonoBehaviour {
 	public static void changeState(int State)
 	{
 		nextState = State;
-	}	
+	}
+	void FixedUpdate()
+	{
+
+	}
 
 	public void shootBubble()
 	{
@@ -216,11 +215,10 @@ public class GamePlay : MonoBehaviour {
                     SoundEngine.playSound("SoundShoot");
                     LevelManager.countbubbleShoot++;
                     GunnerAnim.Play("GUNNER_SHOOT");
-                    LevelManager.currentBubble.GetComponent<Rigidbody2D>().velocity = fingerPos;//
+                    LevelManager.currentBubble.rigidbody2D.velocity = fingerPos;//
                     LevelManager.currentBubble.GetComponent<Bubble>().currentvelocity = fingerPos;//
                     LevelManager.currentBubble.transform.eulerAngles = new Vector3(0, 0, 0);
                     LevelManager.currentBubble.GetComponent<Bubble>().state = Bubble.STATE_BUBBLE_SHOOT;
-//					Debug.Log(LevelManager.currentBubble.GetComponent<Bubble>().state );
                 }
             }
         }
@@ -242,7 +240,15 @@ public class GamePlay : MonoBehaviour {
         GameObject.Destroy(LevelManager.currentBubble);        
         LevelManager.creatNewBubble();
 	}
-
+	public void initGameOver()
+	{
+//		BoxCollider2D [] arraycollider;
+		//for (int i= trapList.Count-1; i>-1; i--) {
+		//	arraycollider =((GameObject) trapList[i]).GetComponents<BoxCollider2D>();
+		//	for(int j =0; j<arraycollider.Length;j++)
+		//		arraycollider[j].enabled = false;
+		//}
+	}
 
 	
 }

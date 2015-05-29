@@ -3,7 +3,6 @@ using System.Collections;
 using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 
 // Source: UIToolkit -- https://github.com/prime31/UIToolkit/blob/master/Assets/Plugins/MiniJSON.cs
 
@@ -44,48 +43,19 @@ public class NGUIJson
 	/// Parse the specified JSon file, loading sprite information for the specified atlas.
 	/// </summary>
 
-	static public void LoadSpriteData (UIAtlas atlas, TextAsset asset)
+	public static void LoadSpriteData (UIAtlas atlas, TextAsset asset)
 	{
 		if (asset == null || atlas == null) return;
 
 		string jsonString = asset.text;
-
 		Hashtable decodedHash = jsonDecode(jsonString) as Hashtable;
-
+		
 		if (decodedHash == null)
 		{
 			Debug.LogWarning("Unable to parse Json file: " + asset.name);
+			return;
 		}
-		else LoadSpriteData(atlas, decodedHash);
 
-		asset = null;
-		Resources.UnloadUnusedAssets();
-	}
-
-	/// <summary>
-	/// Parse the specified JSon file, loading sprite information for the specified atlas.
-	/// </summary>
-
-	static public void LoadSpriteData (UIAtlas atlas, string jsonData)
-	{
-		if (string.IsNullOrEmpty(jsonData) || atlas == null) return;
-
-		Hashtable decodedHash = jsonDecode(jsonData) as Hashtable;
-
-		if (decodedHash == null)
-		{
-			Debug.LogWarning("Unable to parse the provided Json string");
-		}
-		else LoadSpriteData(atlas, decodedHash);
-	}
-
-	/// <summary>
-	/// Parse the specified JSon file, loading sprite information for the specified atlas.
-	/// </summary>
-
-	static void LoadSpriteData (UIAtlas atlas, Hashtable decodedHash)
-	{
-		if (decodedHash == null || atlas == null) return;
 		List<UISpriteData> oldSprites = atlas.spriteList;
 		atlas.spriteList = new List<UISpriteData>();
 
@@ -180,6 +150,10 @@ public class NGUIJson
 		// Sort imported sprites alphabetically
 		atlas.spriteList.Sort(CompareSprites);
 		Debug.Log("Imported " + atlas.spriteList.Count + " sprites");
+
+		// Unload the asset
+		asset = null;
+		Resources.UnloadUnusedAssets();
 	}
 
 	/// <summary>

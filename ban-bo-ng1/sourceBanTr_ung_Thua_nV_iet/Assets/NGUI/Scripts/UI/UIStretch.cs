@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2015 Tasharen Entertainment
+// Copyright © 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -84,11 +84,7 @@ public class UIStretch : MonoBehaviour
 
 	void Awake ()
 	{
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
 		mAnim = animation;
-#else
-		mAnim = GetComponent<Animation>();
-#endif
 		mRect = new Rect();
 		mTrans = transform;
 		mWidget = GetComponent<UIWidget>();
@@ -109,7 +105,7 @@ public class UIStretch : MonoBehaviour
 			container = widgetContainer.gameObject;
 			widgetContainer = null;
 #if UNITY_EDITOR
-			NGUITools.SetDirty(this);
+			UnityEditor.EditorUtility.SetDirty(this);
 #endif
 		}
 
