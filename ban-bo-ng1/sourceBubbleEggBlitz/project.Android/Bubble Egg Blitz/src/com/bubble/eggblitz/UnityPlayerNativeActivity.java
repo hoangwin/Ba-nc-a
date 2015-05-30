@@ -1,19 +1,25 @@
 package com.bubble.eggblitz;
 
+import com.google.ads.AdRequest.ErrorCode;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.startapp.android.publish.Ad;
+import com.startapp.android.publish.AdEventListener;
 import com.startapp.android.publish.StartAppAd;
 import com.startapp.android.publish.StartAppSDK;
 import com.startapp.android.publish.banner.Banner;
 import com.unity3d.player.*;
 
 import android.app.NativeActivity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Debug;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -24,7 +30,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+
+import com.chartboost.sdk.*;
+import com.chartboost.sdk.Libraries.CBLogging.Level;
+import com.chartboost.sdk.Model.CBError.CBClickError;
+import com.chartboost.sdk.Model.CBError.CBImpressionError;
 public class UnityPlayerNativeActivity extends NativeActivity
 {
 	protected UnityPlayer mUnityPlayer;		// don't change the name of this variable; referenced from native code
@@ -37,9 +49,15 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 
+	    Chartboost.startWithAppId(this, "543936a7c26ee439949058b5", "3f537efd1065fba3919a1f3fb1f1a14df2d0d421");//chartboost hoang...hotmail
+		Chartboost.setLoggingLevel(Level.ALL);
+		Chartboost.setDelegate(delegate);
+	    /* Optional: If you want to program responses to Chartboost events, supply a delegate object here and see step (10) for more information */
+	    //Chartboost.setDelegate(delegate);
+	    Chartboost.onCreate(this);
 		getWindow().takeSurface(null);
 		setTheme(android.R.style.Theme_NoTitleBar_Fullscreen);
-		getWindow().setFormat(PixelFormat.RGB_565);
+		getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
 		mUnityPlayer = new UnityPlayer(this);
 		if (mUnityPlayer.getSettings ().getBoolean ("hide_status_bar", true))
@@ -53,37 +71,103 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		layout = new FrameLayout(this);
 		layout.setPadding(0, 0, 0, 0);
 		showAdmobAds( this);
+	//	instance.ShowAdmobFull();
 	
 		layout.addView(mUnityPlayer);
 		//layout.addView(adView,adsParams);
 		
-		StartAppSDK.init(this, "106420618", "208005111", true);
+		StartAppSDK.init(this, "106420618", "208005111");
+		startAppAd = new StartAppAd(this);
+	//	showStartAppBanner();
+		//InMobi.initialize(this, "faa84edfbcf049b9ad39a5b7dc6057a9");
+		
 		//startAppAd.showAd(); // show the ad
 		//startAppAd.loadAd(); // load the next ad
-		 
-		StartAppAd.showSplash(this, savedInstanceState);
-		
-		
+
+		//StartAppAd.showSplash(this, savedInstanceState);
 		setContentView(layout);
 		
-		
-	  /*  interstitial = new InterstitialAd(this);
-	    interstitial.setAdUnitId("ca-app-pub-7727165943990659/6934463125");
 
-    // Create ad request.
-    	AdRequest adRequest = new AdRequest.Builder().build();
-    	// Begin loading your interstitial.
-	    interstitial.loadAd(adRequest);		
-		
-		interstitial.setAdListener(new AdListener() {
-			  @Override
-			  public void onAdLoaded() {
-				  interstitial.show();
-			  }
-			});
-			*/
 	}
+public void showStartAppBanner()
+{
+	Banner startAppBanner = new Banner(this);
+	layout.addView(startAppBanner, adsParams);
+}
+	public void ShowAdmobFull()// goi tu ben unity sang
+	{
+		Log.d("Admob", "MRAID InApp Ad is calling..");
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {							
+				interstitial = new InterstitialAd(instance);
+				interstitial.setAdUnitId("ca-app-pub-7727165943990659/6934463125");
+				// Create ad request.
+				AdRequest adRequest = new AdRequest.Builder().build();
+				// Begin loading your interstitial.
+				interstitial.loadAd(adRequest);
+
+				interstitial.setAdListener(new AdListener() {
+					@Override
+					public void onAdLoaded() {
+						interstitial.show();
+						Log.d("Admob onAdLoaded", "onAdLoaded");
+					}
+
+					public void onAdFailedToLoad(int errorCode) {
+						Log.d("Admob onAdFailedToLoad", "onAdFailedToLoad");
+//						instance.ShowChartboost();
+							ShowStarAppFull();
+					}
+
+					public void onAdOpened() {
+						Log.d("Admob onAdOpened", "onAdOpened");
+					}
+
+					public void onAdClosed() {
+						Log.d("Admob onAdClosed", "onAdClosed");
+						//AdRequest adRequest = new AdRequest.Builder().build();
+						//interstitial.loadAd(adRequest);
+					}
+					public void onAdLeftApplication() {
+						Log.d("Admob onAdLeftApplication", "onAdLeftApplication");
+					}					
+				});
+			}
+		});
+
+	}
+	public void ShowStarAppFull()
+	{
+    	startAppAd.showAd(); // show the ad		        	
+		startAppAd.loadAd ();			
+			
+	}	
+public static  int ShowAdsFull()// goi tu unity sang
+{
 	
+//		UnityPlayerNativeActivity.ShowChartboost();
+		instance.ShowAdmobFull();
+	return 1;
+}
+public static  int ShowChartboost()
+{
+		 if (Chartboost.hasInterstitial(CBLocation.LOCATION_LEADERBOARD))	
+	{
+		//Chartboost.cacheInterstitial(CBLocation.LOCATION_LEADERBOARD);
+		Chartboost.showInterstitial(CBLocation.LOCATION_LEADERBOARD);
+	}	
+	else if (Chartboost.hasInterstitial(CBLocation.LOCATION_MAIN_MENU))	
+	{
+		//Chartboost.cacheInterstitial(CBLocation.LOCATION_MAIN_MENU);
+		Chartboost.showInterstitial(CBLocation.LOCATION_MAIN_MENU);
+	}else
+	{
+		//Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);
+		Chartboost.showInterstitial(CBLocation.LOCATION_DEFAULT);
+	}	
+		return 1;
+}
 	
 	static FrameLayout layout ;
 	static FrameLayout.LayoutParams adsParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, android.view.Gravity.BOTTOM | android.view.Gravity.CENTER);
@@ -119,8 +203,18 @@ public class UnityPlayerNativeActivity extends NativeActivity
 				    });
 				adView.loadAd(adRequest);	
 			}
-		});	
+		});
 	}
+	@Override
+	public void onStart() {//tu them vo 
+	    super.onStart();
+	    Chartboost.onStart(this);
+	}
+	@Override
+	public void onBackPressed() {
+    startAppAd.onBackPressed();
+    super.onBackPressed();
+}
 	@Override protected void onDestroy ()
 	{
 		   if (adView != null) {
@@ -128,6 +222,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 			    }
 		mUnityPlayer.quit();
 		super.onDestroy();
+		Chartboost.onDestroy(this);
 	}
 
 	// Pause Unity
@@ -138,6 +233,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		    }
 		super.onPause();
 		mUnityPlayer.pause();
+		Chartboost.onPause(this);
 		startAppAd.onPause();
 	}
 
@@ -145,13 +241,18 @@ public class UnityPlayerNativeActivity extends NativeActivity
 	@Override protected void onResume()
 	{
 		super.onResume();
+		Chartboost.onResume(this);
 		startAppAd.onResume();
 		  if (adView != null) {
 		      adView.resume();
 		    }
 		mUnityPlayer.resume();
 	}
-
+	@Override
+	public void onStop() {
+	    super.onStop();
+	    Chartboost.onStop(this);
+	}
 	// This ensures the layout will be correct.
 	@Override public void onConfigurationChanged(Configuration newConfig)
 	{
@@ -184,4 +285,101 @@ public class UnityPlayerNativeActivity extends NativeActivity
 	@Override public boolean onKeyDown(int keyCode, KeyEvent event)   { return mUnityPlayer.injectEvent(event); }
 	@Override public boolean onTouchEvent(MotionEvent event)          { return mUnityPlayer.injectEvent(event); }
 	/*API12*/ public boolean onGenericMotionEvent(MotionEvent event)  { return mUnityPlayer.injectEvent(event); }
+	private ChartboostDelegate delegate = new ChartboostDelegate() {
+		@Override
+		public boolean shouldRequestInterstitial(String location) {
+			Log.i("Chartboost ", "SHOULD REQUEST INTERSTITIAL '"+ (location != null ? location : "null"));		
+			return true;
+		}
+	
+		@Override
+		public boolean shouldDisplayInterstitial(String location) {
+			Log.i("Chartboost ", "SHOULD DISPLAY INTERSTITIAL '"+ (location != null ? location : "null"));
+			return true;
+		}
+	
+		@Override
+		public void didCacheInterstitial(String location) {
+			Log.i("Chartboost ", "DID CACHE INTERSTITIAL '"+ (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didFailToLoadInterstitial(String location, CBImpressionError error) {
+			Log.i("Chartboost ", "DID FAIL TO LOAD INTERSTITIAL '"+ (location != null ? location : "null")+ " Error: " + error.name());
+		//	Toast.makeText(getApplicationContext(), "INTERSTITIAL '"+location+"' REQUEST FAILED - " + error.name(), Toast.LENGTH_SHORT).show();
+			//startAppAd = new StartAppAd(UnityPlayerNativeActivity.instance);
+			ShowStarAppFull();
+		}
+	
+		@Override
+		public void didDismissInterstitial(String location) {
+			Log.i("Chartboost ", "DID DISMISS INTERSTITIAL: "+ (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didCloseInterstitial(String location) {
+			Log.i("Chartboost ", "DID CLOSE INTERSTITIAL: "+ (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didClickInterstitial(String location) {
+			Log.i("Chartboost ", "DID CLICK INTERSTITIAL: "+ (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didDisplayInterstitial(String location) {
+			Log.i("Chartboost ", "DID DISPLAY INTERSTITIAL: " +  (location != null ? location : "null"));
+		}
+	
+		@Override
+		public boolean shouldRequestMoreApps(String location) {
+			Log.i("Chartboost ", "SHOULD REQUEST MORE APPS: " +  (location != null ? location : "null"));
+			return true;
+		}
+	
+		@Override
+		public boolean shouldDisplayMoreApps(String location) {
+			Log.i("Chartboost ", "SHOULD DISPLAY MORE APPS: " +  (location != null ? location : "null"));
+			return true;
+		}
+	
+		@Override
+		public void didFailToLoadMoreApps(String location, CBImpressionError error) {
+			Log.i("Chartboost ", "DID FAIL TO LOAD MOREAPPS " +  (location != null ? location : "null")+ " Error: "+ error.name());
+		//	Toast.makeText(getApplicationContext(), "MORE APPS REQUEST FAILED - " + error.name(), Toast.LENGTH_SHORT).show();
+		}
+	
+		@Override
+		public void didCacheMoreApps(String location) {
+			Log.i("Chartboost ", "DID CACHE MORE APPS: " +  (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didDismissMoreApps(String location) {
+			Log.i("Chartboost ", "DID DISMISS MORE APPS " +  (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didCloseMoreApps(String location) {
+			Log.i("Chartboost ", "DID CLOSE MORE APPS: "+  (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didClickMoreApps(String location) {
+			Log.i("Chartboost ", "DID CLICK MORE APPS: "+  (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didDisplayMoreApps(String location) {
+			Log.i("Chartboost ", "DID DISPLAY MORE APPS: " +  (location != null ? location : "null"));
+		}
+	
+		@Override
+		public void didFailToRecordClick(String uri, CBClickError error) {
+			Log.i("Chartboost ", "DID FAILED TO RECORD CLICK " + (uri != null ? uri : "null") + ", error: " + error.name());
+		//	Toast.makeText(getApplicationContext(), "FAILED TO RECORD CLICK " + (uri != null ? uri : "null") + ", error: " + error.name(), Toast.LENGTH_SHORT).show();
+		}
+		
+		
+	};
 }
