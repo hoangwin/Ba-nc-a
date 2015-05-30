@@ -9,7 +9,7 @@ public class ScoreControl : MonoBehaviour {
 
 	public static string STRING_USER_NAME ="USER_NAME";
 	
-    public static string STRING_UNBLOCK_LEVEL = "UNBLOCK_LEVEL";
+    public static string STRING_UNBLOCK_LEVEL = "level_puzzle";
 	public static string UserName = "NaN";
 	public static string STRING_LEVEL_STAR = "LEVEL_STAR";
 	public static string strLevelStar =  new string('0',680);
