@@ -14,7 +14,7 @@ public class SelectLevel : MonoBehaviour {
         currentpage = ScoreControl.mUnblockLevel / 20 + 1;
         if (currentpage > 34) currentpage = 34;
         setAllButton();
-        
+        AdsManager.ShowADS_FULL();
 	}
 
     // Update is called once per frame

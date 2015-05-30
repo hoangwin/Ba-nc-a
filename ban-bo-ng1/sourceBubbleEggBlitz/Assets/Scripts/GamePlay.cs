@@ -69,6 +69,7 @@ public class GamePlay : MonoBehaviour {
 	void Update () 
 	{
 		TimePlayedSubState += Time.deltaTime;
+        AdsManager.timeShowAds += Time.deltaTime;
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 				
                 if (currentState == STATE_PLAY)
@@ -104,6 +105,7 @@ public class GamePlay : MonoBehaviour {
 			{
 
 				PanelWin.SetActive(true);
+                AdsManager.ShowADS_FULL();
                 GameObject.Find("LabelScoreWin").GetComponent<UILabel>().text = ScoreControl.Score.ToString();
                 if (ScoreControl.mUnblockLevel == LevelManager.currentLevel)
                 {

@@ -18,12 +18,12 @@ public class ButtonControl : MonoBehaviour {
 		Application.LoadLevel("SelectLevel");
 	
 	}
-	public void EndlessButtonPress()
+    public void MoreGame()
 	{
-        SoundEngine.playSound("SoundClick");
+        //SoundEngine.playSound("SoundClick");
 		//Application.LoadLevel("GamePlayScence");
-        Application.LoadLevel("About");
-	
+        //Application.LoadLevel("About");
+        Application.OpenURL("http://aegamemobile.com");
 	}
     public void ExitButtonPress()
     {
