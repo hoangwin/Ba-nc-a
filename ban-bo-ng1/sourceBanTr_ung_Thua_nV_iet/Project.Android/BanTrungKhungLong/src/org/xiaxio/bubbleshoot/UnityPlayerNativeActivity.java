@@ -73,7 +73,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		instance = this;
 		layout = new FrameLayout(this);
 		layout.setPadding(0, 0, 0, 0);
-	//	showAdmobAds( this);
+		
 	//	instance.ShowAdmobFull();
 
 		layout.addView(mUnityPlayer);
@@ -81,7 +81,8 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		
 		StartAppSDK.init(this, "106420618", "208256714");//, false);
 		startAppAd = new StartAppAd(this);
-		showStartAppBanner();
+		showAdmobAds( this);
+		//showStartAppBanner();
 		//InMobi.initialize(this, "faa84edfbcf049b9ad39a5b7dc6057a9");
 		
 		//startAppAd.showAd(); // show the ad
@@ -119,11 +120,13 @@ public void showStartAppBanner()
 
 					public void onAdFailedToLoad(int errorCode) {
 						Log.d("Admob onAdFailedToLoad", "onAdFailedToLoad");
-						instance.ShowChartboost();
+						//instance.ShowChartboost();
+						ShowStarAppFull();
 					}
 
 					public void onAdOpened() {
 						Log.d("Admob onAdOpened", "onAdOpened");
+						
 					}
 
 					public void onAdClosed() {
@@ -148,8 +151,8 @@ public void showStartAppBanner()
 public static  int ShowAdsFull()// goi tu unity sang
 {
 	
-		UnityPlayerNativeActivity.ShowChartboost();
-//		instance.ShowAdmobFull();
+		//UnityPlayerNativeActivity.ShowChartboost();
+		instance.ShowAdmobFull();
 	return 1;
 }
 public static  int ShowChartboost()
@@ -200,6 +203,24 @@ public static  int ShowChartboost()
 						}
 						// adView.setVisibility(View.VISIBLE);
 					}
+					@Override
+					public void onAdFailedToLoad(int errorCode){
+						instance.showStartAppBanner();
+						adView.destroy();
+		                adView.setVisibility(View.GONE);
+					 }
+					@Override
+					  public void onAdOpened(){
+						  
+					  }
+					@Override
+					  public void onAdClosed(){
+						  
+					  }
+					@Override
+					  public void onAdLeftApplication(){
+						  
+					  }
 				});
 				adView.loadAd(adRequest);
 			}
