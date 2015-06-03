@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MainMenu : MonoBehaviour {
 	// Use this for initialization
 
 	public static MainMenu instance;
+    public GameObject background;
 	void Start () {
 		DEF.Init ();
 		DEF.ScaleAnchorGui();
@@ -16,6 +18,7 @@ public class MainMenu : MonoBehaviour {
             SoundEngine.soundclick = GameObject.Find("SoundClick");
             DontDestroyOnLoad(SoundEngine.soundclick);
         }
+        DEF.scaleFixImagetoScreen(background);
 	}	
 	// Update is called once per frame
 	void Update () {
@@ -23,12 +26,11 @@ public class MainMenu : MonoBehaviour {
 		{
 			Application.Quit();
 		}
-
 	}
 	public void setBGButton()
 	{
 		GameObject bgButton = GameObject.Find("LabelSoundOnOff");
-		UILabel  target = bgButton.GetComponentInChildren<UILabel>();
+        Text target = bgButton.GetComponentInChildren<Text>();
 		if(SoundEngine.isSound)
             target.text = "Âm Thanh : Bật";
 		else

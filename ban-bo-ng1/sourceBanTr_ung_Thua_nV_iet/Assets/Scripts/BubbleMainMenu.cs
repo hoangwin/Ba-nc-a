@@ -5,7 +5,7 @@ public class BubbleMainMenu : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+        AnimControl.instance.MenuBegin();
 	}
 	public float min;
 	public float max;
