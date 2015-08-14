@@ -15,9 +15,11 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Info;
 using Windows.Foundation;
 using Windows.Devices.Geolocation;
+using Microsoft.Phone.Tasks;
 using System.Windows.Threading;
 using UnityApp = UnityPlayer.UnityApp;
 using UnityBridge = WinRTBridge.WinRTBridge;
+using System.Windows.Media.Imaging;
 using vservWindowsPhone;//Full Ads
 using InMobi.WP.AdSDK;
 using GoogleAds;
@@ -29,6 +31,7 @@ namespace BanTrungKhungLong
 		private bool _unityStartedLoading;
 		private bool _useLocation;
         private static InterstitialAd interstitialAd;
+        AdRequest adRequest = new AdRequest(); //admob           
         AdView bannerAd;
         public static int isShowAds = 1;//1 = true
         public static MainPage instance;
@@ -43,15 +46,25 @@ namespace BanTrungKhungLong
             WP8Statics.WP8FunctionHandleShowAds += WP8Statics_ShowAds;
             WP8Statics.WP8FunctionHandleShowAdsBanner += WP8Statics_ShowAdsBanner;
             
-            VservAdControl VMB = VservAdControl.Instance; //full ads
-            VMB.DisplayAd("2fdc084a", LayoutRoot);  //n_m_hoang@hotmail.com
-            VMB.VservAdClosed += new EventHandler(VACCallback_OnVservAdClosing);
-            VMB.VservAdError += new EventHandler(VACCallback_OnVservAdNetworkError);
-            VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
+			showAdmobBanner();
+           // VservAdControl VMB = VservAdControl.Instance; //full ads
+          //  VMB.DisplayAd("2fdc084a", LayoutRoot);  //n_m_hoang@hotmail.com
+          //  VMB.VservAdClosed += new EventHandler(VACCallback_OnVservAdClosing);
+          //  VMB.VservAdError += new EventHandler(VACCallback_OnVservAdNetworkError);
+          //  VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
             instance = this;
 
            
 		}
+void showVservAdsFull()
+{
+VservAdControl VMB = VservAdControl.Instance; //full ads
+VMB.DisplayAd("2fdc084a", LayoutRoot);  //n_m_hoang@hotmail.com
+VMB.VservAdClosed += new EventHandler(VACCallback_OnVservAdClosing);
+VMB.VservAdError += new EventHandler(VACCallback_OnVservAdNetworkError);
+VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
+}
+
 
         void WP8Statics_StopAds(object sender, EventArgs e)
         {
@@ -62,30 +75,16 @@ namespace BanTrungKhungLong
 
         void WP8Statics_ShowAds(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(AdmobFullAdsShow);
+            AdmobFullAdsShow();
          
         }
         void WP8Statics_ShowAdsBanner(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(showBannerAdmob);          
+            showAdmobBanner();
         }
-        void showBannerAdmob()
-        {
-
-            bannerAd = new AdView
-            {
-                Format = AdFormats.Banner,
-                AdUnitID = "ca-app-pub-7413680112188055/2826421325"//hoangcaogia
-            };
-            bannerAd.FailedToReceiveAd += OnFailedToReceiveAd;
-            bannerAd.ReceivedAd += OnAdReceivedBanner;
-
-            adGridAdmob.Children.Add(bannerAd);
-            AdRequest adRequest = new AdRequest();
-            //adRequest.ForceTesting = true;
-            bannerAd.LoadAd(adRequest);
-			
-        }
+		
+		       
+      
         private void OnAdReceivedBanner(object sender, AdEventArgs e)//admob Full Ads
         {
             System.Diagnostics.Debug.WriteLine("Ad received successfully");
@@ -105,63 +104,89 @@ namespace BanTrungKhungLong
 			//AdmobFullAdsShow();
 
          }
-       	
-		void AdmobFullAdsShow()
+       	        void AdmobFullAdsShow()
         {
-            interstitialAd = new InterstitialAd("ca-app-pub-7413680112188055/4861557728");//full ads hogncaogia
-            AdRequest adRequest = new AdRequest();
-            interstitialAd.ReceivedAd += OnAdReceived;
-            interstitialAd.FailedToReceiveAd += OnAdFailed;
+          //  if (interstitialAd == null)
+            {
+                interstitialAd = new InterstitialAd("ca-app-pub-7413680112188055/4861557728");//mobilewp8
+                interstitialAd.ReceivedAd += OnAdReceivedFull;
+                interstitialAd.FailedToReceiveAd += OnFailedToReceiveAdFull;
+            }            
+            //adRequest.ForceTesting = true;//here to rem
             interstitialAd.LoadAd(adRequest);
-        }
-        private void OnAdFailed(object sender, AdErrorEventArgs e)//admob Full Ads
+         }
+ void showAdmobBanner()
         {
+            if (isShowAds == 1)
+            {
+                bannerAd = new AdView
+                {
+                    Format = AdFormats.Banner,
+                    AdUnitID = "ca-app-pub-7413680112188055/2826421325"
+                };
 
+                bannerAd.FailedToReceiveAd += OnFailedToReceiveAd;
+                bannerAd.ReceivedAd += OnReceivedAd;
+                AdRequest adRequest = new AdRequest();
+                //adRequest.ForceTesting = true;//here rem here
+                adGridAdmob.Children.Add(bannerAd);
+                bannerAd.LoadAd(adRequest);//hinh nh cai nay thua. Can kiem tra lai
+                // toanstt_Refresh_admob();
+            }
         }
-        private void OnAdReceived(object sender, AdEventArgs e)//admob Full Ads
+	
+        private void OnAdReceivedFull(object sender, AdEventArgs e)//admob Full Ads
         {
             System.Diagnostics.Debug.WriteLine("Ad received successfully");
-            interstitialAd.ShowAd();
+            interstitialAd.ShowAd();            
         }
-		
+        private void OnFailedToReceiveAdFull(object sender, AdErrorEventArgs errorCode)
+        {
+			showVservAdsFull();
+            System.Diagnostics.Debug.WriteLine("Ad received Fail" + errorCode.ErrorCode.ToString());
+        }
 		private void DrawingSurfaceBackground_Loaded(object sender, RoutedEventArgs e)
 		{
 			if (!_unityStartedLoading)
 			{
 				_unityStartedLoading = true;
 
-				UnityApp.SetLoadedCallback(() => { Dispatcher.BeginInvoke(Unity_Loaded); });
-				
-				int physicalWidth, physicalHeight;
-				object physicalResolution;
+				//UnityApp.SetLoadedCallback(() => { Dispatcher.BeginInvoke(Unity_Loaded); });
 
 				var content = Application.Current.Host.Content;
 				var nativeWidth = (int)Math.Floor(content.ActualWidth * content.ScaleFactor / 100.0 + 0.5);
 				var nativeHeight = (int)Math.Floor(content.ActualHeight * content.ScaleFactor / 100.0 + 0.5);
+				
+				var physicalWidth = nativeWidth;
+				var physicalHeight = nativeHeight;
+				object physicalResolution;
 
 				if (DeviceExtendedProperties.TryGetValue("PhysicalScreenResolution", out physicalResolution))
 				{
-					var resolution = (System.Windows.Size) physicalResolution;
-					physicalWidth = (int)resolution.Width;
-					physicalHeight = (int)resolution.Height;
-				}
-				else
-				{
-					physicalWidth = nativeWidth;
-					physicalHeight = nativeHeight;
+					var resolution = (System.Windows.Size)physicalResolution;
+					var nativeScale = content.ActualHeight / content.ActualWidth;
+					var physicalScale = resolution.Height / resolution.Width;
+					// don't use physical resolution for devices that don't have hardware buttons (e.g. Lumia 630)
+					if (Math.Abs(nativeScale - physicalScale) < 0.01)
+					{
+						physicalWidth = (int)resolution.Width;
+						physicalHeight = (int)resolution.Height;
+					}
 				}
 
 				UnityApp.SetNativeResolution(nativeWidth, nativeHeight);
 				UnityApp.SetRenderResolution(physicalWidth, physicalHeight);
-				UnityPlayer.UnityApp.SetOrientation((int)Orientation);
+				UnityApp.SetOrientation((int)Orientation);
 
 				DrawingSurfaceBackground.SetBackgroundContentProvider(UnityApp.GetBackgroundContentProvider());
 				DrawingSurfaceBackground.SetBackgroundManipulationHandler(UnityApp.GetManipulationHandler());
-
-               
-
-            }
+			}
 		}
+        
+        private void OnReceivedAd(object sender, AdEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Ad received successfully");
+        }
         private void OnFailedToReceiveAd(object sender, AdErrorEventArgs errorCode)
         {          
             //  adGridAdmob.Visibility = Visibility.Collapsed;
@@ -171,10 +196,9 @@ namespace BanTrungKhungLong
           //      AdsManager.showAds(DrawingSurfaceBackground, AdsManager.INDEX_INNER_ACTIVE);	
         }
 
-		private void Unity_Loaded()
+		/*private void Unity_Loaded()
 		{
-			SetupGeolocator();
-		}
+		}*/
 
 		private void PhoneApplicationPage_BackKeyPress(object sender, CancelEventArgs e)
 		{
@@ -185,51 +209,5 @@ namespace BanTrungKhungLong
 		{
 			UnityApp.SetOrientation((int)e.Orientation);
 		}
-
-		protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            if (!UnityApp.IsLocationEnabled())
-                return;
-            if (IsolatedStorageSettings.ApplicationSettings.Contains("LocationConsent"))
-                _useLocation = (bool)IsolatedStorageSettings.ApplicationSettings["LocationConsent"];
-            else
-            {
-                MessageBoxResult result = MessageBox.Show("Can this application use your location?",
-                    "Location Services", MessageBoxButton.OKCancel);
-                _useLocation = result == MessageBoxResult.OK;
-                IsolatedStorageSettings.ApplicationSettings["LocationConsent"] = _useLocation;
-                IsolatedStorageSettings.ApplicationSettings.Save();
-            }
-        }
-
-		private void SetupGeolocator()
-        {
-            if (!_useLocation)
-                return;
-
-            try
-            {
-				UnityApp.EnableLocationService(true);
-                Geolocator geolocator = new Geolocator();
-				geolocator.ReportInterval = 5000;
-                IAsyncOperation<Geoposition> op = geolocator.GetGeopositionAsync();
-                op.Completed += (asyncInfo, asyncStatus) =>
-                    {
-                        if (asyncStatus == AsyncStatus.Completed)
-                        {
-                            Geoposition geoposition = asyncInfo.GetResults();
-                            UnityApp.SetupGeolocator(geolocator, geoposition);
-                        }
-                        else
-                            UnityApp.SetupGeolocator(null, null);
-                    };
-            }
-            catch (Exception)
-            {
-                UnityApp.SetupGeolocator(null, null);
-            }
-        }
 	}
 }
