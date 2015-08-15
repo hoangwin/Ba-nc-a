@@ -20,7 +20,9 @@ using System.Windows.Threading;
 using UnityApp = UnityPlayer.UnityApp;
 using UnityBridge = WinRTBridge.WinRTBridge;
 using System.Windows.Media.Imaging;
-using vservWindowsPhone;//Full Ads
+using com.vserv.windows.ads.wp8;
+using com.vserv.windows.ads;
+//using vservWindowsPhone;//Full Ads
 using InMobi.WP.AdSDK;
 using GoogleAds;
 
@@ -35,9 +37,13 @@ namespace BanTrungKhungLong
         AdView bannerAd;
         public static int isShowAds = 1;//1 = true
         public static MainPage instance;
+        VservAdView adView;
 		// Constructor
 		public MainPage()
 		{
+            
+            
+
 			var bridge = new UnityBridge();
 			UnityApp.SetBridge(bridge);
 			InitializeComponent();
@@ -56,14 +62,31 @@ namespace BanTrungKhungLong
 
            
 		}
-void showVservAdsFull()
-{
-VservAdControl VMB = VservAdControl.Instance; //full ads
-VMB.DisplayAd("2fdc084a", LayoutRoot);  //n_m_hoang@hotmail.com
-VMB.VservAdClosed += new EventHandler(VACCallback_OnVservAdClosing);
-VMB.VservAdError += new EventHandler(VACCallback_OnVservAdNetworkError);
-VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
-}
+        void showVservAdsFull()
+        {
+            /*
+            VservAdControl VMB = VservAdControl.Instance; //full ads
+            VMB.DisplayAd("2fdc084a", LayoutRoot);  //n_m_hoang@hotmail.com
+            VMB.VservAdClosed += new EventHandler(VACCallback_OnVservAdClosing);
+            VMB.VservAdError += new EventHandler(VACCallback_OnVservAdNetworkError);
+            VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
+            */
+            VservAdView adView = new VservAdView();
+            adView.FailedToLoadAd += VACCallback_OnVservAdNoFill;
+            // adView.WillDismissOverlay += AdCollapsed;
+            //  adView.WillLeaveApp += LeavingApplication;
+            // adView.WillPresentOverlay += AdExpanded;
+            //  adView.FailedToCacheAd += DidFailed_CacheAd;   
+            adView.UX = VservAdUX.Interstitial; // To specify Interstitial ads.
+            adView.ZoneId = "2fdc084a"; //to test  "8063";
+            adView.TimeOut = 20; // To specify the timeout in case of Ad failure. Default is 20
+            // adView.DidLoadAd += AdReceived;
+            adView.LoadAd(); // This will load the Ad and on success provides a callBack named DidLoadAd. You need to handle this to perform any action on this event in your application.
+            //adView.CacheAd();  // To perform caching of the Ad. If required, this event can be used to run any custom code.
+            adView.ShowAd();   // To show the Cached Ad
+            //adView.CancelAd();
+
+        }
 
 
         void WP8Statics_StopAds(object sender, EventArgs e)
@@ -75,6 +98,7 @@ VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
 
         void WP8Statics_ShowAds(object sender, EventArgs e)
         {
+           
             AdmobFullAdsShow();
          
         }
@@ -101,21 +125,21 @@ VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
 
         void VACCallback_OnVservAdNoFill(object sender, EventArgs e)
         {
-			//AdmobFullAdsShow();
+		//	AdmobFullAdsShow();
 
          }
-       	        void AdmobFullAdsShow()
+        void AdmobFullAdsShow()
         {
-          //  if (interstitialAd == null)
+            //  if (interstitialAd == null)
             {
                 interstitialAd = new InterstitialAd("ca-app-pub-7413680112188055/4861557728");//mobilewp8
                 interstitialAd.ReceivedAd += OnAdReceivedFull;
                 interstitialAd.FailedToReceiveAd += OnFailedToReceiveAdFull;
-            }            
+            }
             //adRequest.ForceTesting = true;//here to rem
             interstitialAd.LoadAd(adRequest);
-         }
- void showAdmobBanner()
+        }
+        void showAdmobBanner()
         {
             if (isShowAds == 1)
             {
@@ -142,7 +166,10 @@ VMB.VservAdNoFill += new EventHandler(VACCallback_OnVservAdNoFill);
         }
         private void OnFailedToReceiveAdFull(object sender, AdErrorEventArgs errorCode)
         {
-			showVservAdsFull();
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                showVservAdsFull();
+            });  
             System.Diagnostics.Debug.WriteLine("Ad received Fail" + errorCode.ErrorCode.ToString());
         }
 		private void DrawingSurfaceBackground_Loaded(object sender, RoutedEventArgs e)

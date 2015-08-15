@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="vi" />
-  <App xmlns="" ProductID="{F43E8E43-FC3F-48CE-AD2B-35480DC7B804}" Title="Bắn Trứng Khủng Long" RuntimeType="Silverlight" Version="1.0.0.5" Genre="apps.games" Author="Thuan Viet Game" Description="" Publisher="Thuan Viet Game" PublisherID="{36e0404a-2921-4b73-8632-3bf364496337}">
+  <App xmlns="" ProductID="{F43E8E43-FC3F-48CE-AD2B-35480DC7B804}" Title="Bắn Trứng Khủng Long" RuntimeType="Silverlight" Version="1.0.0.6" Genre="apps.games" Author="Thuan Viet Game" Description="" Publisher="Thuan Viet Game" PublisherID="{36e0404a-2921-4b73-8632-3bf364496337}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_IDENTITY_DEVICE" />
@@ -13,6 +13,8 @@
       <Capability Name="ID_CAP_IDENTITY_USER" />
       <Capability Name="ID_CAP_PHONEDIALER" />
       <Capability Name="ID_CAP_REMOVABLE_STORAGE" />
+      <Capability Name="ID_CAP_MEDIALIB_PHOTO" />
+      <Capability Name="ID_CAP_LOCATION" />
     </Capabilities>
     <Tasks>
       <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
