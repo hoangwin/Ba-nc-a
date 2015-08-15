@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2013 Tasharen Entertainment
+// Copyright Â© 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -94,7 +94,7 @@ public class UIScrollBar : UISlider
 	{
 		base.OnStart();
 
-		if (mFG != null && mFG.collider != null && mFG.gameObject != gameObject)
+		if (mFG != null && mFG.GetComponent<Collider>() != null && mFG.gameObject != gameObject)
 		{
 			UIEventListener fgl = UIEventListener.Get(mFG.gameObject);
 			fgl.onPress += OnPressForeground;
