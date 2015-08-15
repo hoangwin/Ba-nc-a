@@ -1,71 +1,76 @@
-#ifndef _TRAMPOLINE_UNITYAPPCONTROLLER_H_
-#define _TRAMPOLINE_UNITYAPPCONTROLLER_H_
+#pragma once
 
+#import <QuartzCore/CADisplayLink.h>
 
-#import <UIKit/UIKit.h>
-#include "iPhone_Common.h"
 #include "PluginBase/RenderPluginDelegate.h"
-#import "GADBannerView.h"//here
-#import "iAd/ADBannerView.h"
-// it is the unity rendering view class
-// if you want custom view logic, you should subclass UnityView
-@class UnityView;
 
-@interface UnityAppController : NSObject<GADBannerViewDelegate , ADBannerViewDelegate>//here
+#import "GoogleMobileAds/GADBannerView.h"//here
+#import "GoogleMobileAds/GADInterstitial.h"
+#import "iAd/ADBannerView.h"
+
+@class UnityView;
+@class DisplayConnection;
+@interface UnityAppController : NSObject<GADBannerViewDelegate , ADBannerViewDelegate,GADInterstitialDelegate,UIApplicationDelegate>//here
 {
 	UnityView*			_unityView;
+	CADisplayLink*		_displayLink;
 
+	UIWindow*			_window;
 	UIView*				_rootView;
 	UIViewController*	_rootController;
+	UIView*				_snapshotView;
+
+	DisplayConnection*	_mainDisplay;
+
+	// we will cache view controllers for fixed orientation
+	// auto-rotation view contoller goes to index=0
+	UIViewController*		_viewControllerForOrientation[5];
+	UIInterfaceOrientation	_curOrientation;
 
 
 	id<RenderPluginDelegate>	_renderDelegate;
     GADBannerView *bannerView_;//here
+    GADInterstitial *interstitial_;
     ADBannerView *iAdBannerView;
     BOOL bannerIsVisible;
     BOOL isShowAdmob;
 }
 @property (strong, nonatomic) GADBannerView *bannerView_;//here
 @property (strong, nonatomic) ADBannerView *iAdBannerView;
+@property (strong, nonatomic) GADInterstitial *interstitial_;
 @property (nonatomic, assign) BOOL bannerIsVisible;
 @property (nonatomic, assign) BOOL isShowAdmob;
 - (void) showAdmob;
 - (void) showiAd;
+- (void) showAdmobFullAds;
 
 // override it to add your render plugin delegate
 - (void)shouldAttachRenderDelegate;
 
-// this one is called at the very end of didFinishLaunchingWithOptions:, just before firing off startUnity
+// this one is called at the very end of didFinishLaunchingWithOptions:
+// after views have been created but before initing engine itself
+// override it to register plugins, tweak UI etc
 - (void)preStartUnity;
-// this one is called at the very end of didFinishLaunchingWithOptions:, after view hierarchy been created
-// NB: it will be started with delay 0: next run loop itration
+
+// this one is called at first applicationDidBecomeActive
+// NB: it will be started with delay 0, so it will run on next run loop iteration
+// this is done to make sure that activity indicator animation starts before blocking loading
 - (void)startUnity:(UIApplication*)application;
-// this is one is passed to CADisplayLink
-- (void)repaintDisplayLink;
-// this is unity frame processing (called from repaintDisplayLink)
-- (void)repaint;
 
-// override this only if you need customized unityview
-- (UnityView*)initUnityViewImpl;
+// this is a part of UIApplicationDelegate protocol starting with ios5
+// setter will be generated empty
+@property (retain, nonatomic) UIWindow*	window;
 
-// override this to tweak unity view hierarchy
-// _unityView will be inited
-// you need to init _rootView and _rootController
-- (void)createViewHierarchyImpl;
+@property (readonly, copy, nonatomic) UnityView*			unityView;
+@property (readonly, copy, nonatomic) CADisplayLink*		unityDisplayLink;
 
-// you should not override these methods in usual case
-- (UnityView*)initUnityView;
-- (void)createViewHierarchy;
-- (void)showGameUI:(UIWindow*)window;
+@property (readonly, copy, nonatomic) UIView*				rootView;
+@property (readonly, copy, nonatomic) UIViewController*		rootViewController;
+@property (readonly, copy, nonatomic) DisplayConnection*	mainDisplay;
 
-// in general this method just works, so override it only if you have very special reorientation logic
-- (void)onForcedOrientation:(ScreenOrientation)orient;
+@property (readonly, nonatomic) UIInterfaceOrientation		interfaceOrientation;
 
-@property (readonly, copy, nonatomic) UnityView*		unityView;
-@property (readonly, copy, nonatomic) UIView*			rootView;
-@property (readonly, copy, nonatomic) UIViewController*	rootViewController;
-
-@property(nonatomic, retain) id renderDelegate;
+@property (nonatomic, retain) id							renderDelegate;
 
 @end
 
@@ -91,13 +96,24 @@ inline UnityAppController*	GetAppController()
 	return (UnityAppController*)[UIApplication sharedApplication].delegate;
 }
 
-void AppController_RenderPluginMethod(SEL method);
-void AppController_RenderPluginMethodWithArg(SEL method, id arg);
+#define APP_CONTROLLER_RENDER_PLUGIN_METHOD(method)							\
+do {																		\
+	id<RenderPluginDelegate> delegate = GetAppController().renderDelegate;	\
+	if([delegate respondsToSelector:@selector(method)])						\
+		[delegate method];													\
+} while(0)
+
+#define APP_CONTROLLER_RENDER_PLUGIN_METHOD_ARG(method, arg)				\
+do {																		\
+	id<RenderPluginDelegate> delegate = GetAppController().renderDelegate;	\
+	if([delegate respondsToSelector:@selector(method:)])					\
+		[delegate method:arg];												\
+} while(0)
+
+
 
 // these are simple wrappers about ios api, added for convenience
 void AppController_SendNotification(NSString* name);
 void AppController_SendNotificationWithArg(NSString* name, id arg);
 
-
-
-#endif // _TRAMPOLINE_UNITYAPPCONTROLLER_H_
+void AppController_SendUnityViewControllerNotification(NSString* name);
