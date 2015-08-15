@@ -31,18 +31,18 @@ public class AdsManager : MonoBehaviour
         }
         */
 
-        if (timeShowAds > 90 || !firstShowAdsFull)
+        if (timeShowAds > 60 || !firstShowAdsFull)
         {
             firstShowAdsFull = true;
             timeShowAds = 0;
-            using (AndroidJavaClass jc = new AndroidJavaClass("com.bubble.eggblitz.UnityPlayerNativeActivity"))
+            using (AndroidJavaClass jc = new AndroidJavaClass("org.xiaxio.bubbleshoot.UnityPlayerNativeActivity"))
             {
                 jc.CallStatic<int>("ShowAdsFull");
             }
         }
             
 #elif UNITY_WP8
-        if (timeShowAds > 120 || !firstShowAdsFull)
+        if (timeShowAds > 60 || !firstShowAdsFull)
         {
             firstShowAdsFull = true;
             timeShowAds = 0;
@@ -50,7 +50,7 @@ public class AdsManager : MonoBehaviour
 
         }
 #elif UNITY_IOS
-        if (timeShowAds > 120 || !firstShowAdsFull)
+        if (timeShowAds > 60 || !firstShowAdsFull)
         {
             firstShowAdsFull = true;
             timeShowAds = 0;

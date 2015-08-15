@@ -124,8 +124,22 @@ public class DEF
 		GameObject mobject = GameObject.Find("Anchor");
 		float s1 = DISPLAY_WIDTH/DISPLAY_HEIGHT;
 		float s2 = 800f/1280f;
+        if (mobject != null)
 		mobject.transform.localScale = new Vector3 (1-(s2-s1), 1,1);		
 	}
-	
+	public static void scaleFixImagetoScreen(GameObject obj)
+    {//x,y
+        //sc1/sc2 =800/1280
+        //image1w/image1heig = 800/1280
+        SpriteRenderer sr =obj. GetComponent<SpriteRenderer>();
+
+        float worldScreenHeight = Camera.main.orthographicSize * 2;
+        float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
+
+        obj.transform.localScale = new Vector3(
+            worldScreenWidth / sr.sprite.bounds.size.x,
+            worldScreenHeight / sr.sprite.bounds.size.y, 1);
+
+    }
 }
 

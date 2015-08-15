@@ -14,8 +14,9 @@ public class ButtonControl : MonoBehaviour {
 	}
 	public void PuzzleButtonPress()
 	{
+        AnimControl.instance.menuEnd();
         SoundEngine.playSound("SoundClick");
-		Application.LoadLevel("SelectLevel");
+		//Application.LoadLevel("SelectLevel");
 	
 	}
     public void MoreGame()

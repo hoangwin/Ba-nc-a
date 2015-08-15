@@ -6,7 +6,7 @@ public class SelectLevel : MonoBehaviour {
 	public static SelectLevel instance;
     public static int currentpage = 1;
     public static int MAX_PAGE = 34;
-
+    public GameObject background;
 	void Start () {
 		DEF.Init();
 		DEF.ScaleAnchorGui();		
@@ -14,7 +14,7 @@ public class SelectLevel : MonoBehaviour {
         currentpage = ScoreControl.mUnblockLevel / 20 + 1;
         if (currentpage > 34) currentpage = 34;
         setAllButton();
-        AdsManager.ShowADS_FULL();
+        DEF.scaleFixImagetoScreen(background);
 	}
 
     // Update is called once per frame

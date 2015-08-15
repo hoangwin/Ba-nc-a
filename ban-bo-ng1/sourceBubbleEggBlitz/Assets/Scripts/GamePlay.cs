@@ -98,14 +98,15 @@ public class GamePlay : MonoBehaviour {
             LevelManager.UpdatekMoveWall();
 			break;
 		case GamePlay.STATE_WAITING_WIN_LOSE:
+            if (TimePlayedSubState >1)
+                AdsManager.ShowADS_FULL();
+
             if (TimePlayedSubState < 2)
                 break;
 
 			if(isWin)
 			{
-
-				PanelWin.SetActive(true);
-                AdsManager.ShowADS_FULL();
+				PanelWin.SetActive(true);                
                 GameObject.Find("LabelScoreWin").GetComponent<UILabel>().text = ScoreControl.Score.ToString();
                 if (ScoreControl.mUnblockLevel == LevelManager.currentLevel)
                 {
@@ -139,7 +140,6 @@ public class GamePlay : MonoBehaviour {
                 ScoreControl.strLevelStar = ScoreControl.strLevelStar.Remove(LevelManager.currentLevel + 1,1);
                 //Debug.Log("LevelManager.star1:" + ScoreControl.strLevelStar);     
                 ScoreControl.saveGame();
-
 				changeState(STATE_WIN);
 			}
 			else
@@ -215,7 +215,7 @@ public class GamePlay : MonoBehaviour {
                     SoundEngine.playSound("SoundShoot");
                     LevelManager.countbubbleShoot++;
                     GunnerAnim.Play("GUNNER_SHOOT");
-                    LevelManager.currentBubble.rigidbody2D.velocity = fingerPos;//
+                    LevelManager.currentBubble.GetComponent<Rigidbody2D>().velocity = fingerPos;//
                     LevelManager.currentBubble.GetComponent<Bubble>().currentvelocity = fingerPos;//
                     LevelManager.currentBubble.transform.eulerAngles = new Vector3(0, 0, 0);
                     LevelManager.currentBubble.GetComponent<Bubble>().state = Bubble.STATE_BUBBLE_SHOOT;

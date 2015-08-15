@@ -93,8 +93,8 @@ public class Bubble : MonoBehaviour {
 			if(state != STATE_BUBBLE_IDE)
 			{
 				//Debug.Log ("Wall");
-				rigidbody2D.velocity = new Vector2( currentvelocity.x * (-1f),currentvelocity.y);
-				currentvelocity = rigidbody2D.velocity;
+				GetComponent<Rigidbody2D>().velocity = new Vector2( currentvelocity.x * (-1f),currentvelocity.y);
+				currentvelocity = GetComponent<Rigidbody2D>().velocity;
 
 			//	Debug.Log("ttttttttttttt");
 			}
@@ -132,11 +132,11 @@ public class Bubble : MonoBehaviour {
 
             LevelManager.currentBubble.layer = 0;// da dinh tren do
         //    if(collision.gameObject.GetComponent<Bubble>().state == STATE_BUBBLE_IDE)
-			    rigidbody2D.velocity = new Vector2(0,0);
+			    GetComponent<Rigidbody2D>().velocity = new Vector2(0,0);
 			//rigidbody2D.mass = 9999;
             LevelManager.bubbleTableArray[indexY, indexX] = LevelManager.currentBubble;
             
-            LevelManager.currentBubble.rigidbody2D.isKinematic = true;
+            LevelManager.currentBubble.GetComponent<Rigidbody2D>().isKinematic = true;
 
             if (LevelManager.getAllNeighborsSameValue(LevelManager.currentBubble))
             {
@@ -179,7 +179,7 @@ public class Bubble : MonoBehaviour {
         obj.GetComponent<Bubble>().animScore.Play("BUBBLE_ANIM_SCORE_EFFECT");
         obj.GetComponent<Bubble>().state = Bubble.STATE_BUBBLE_WAITTING_DESTROY;
       //  obj.GetComponent<Bubble>().rigidbody2D.isKinematic = false;
-        obj.GetComponent<Bubble>().rigidbody2D.velocity = new Vector2(0,0);
+        obj.GetComponent<Bubble>().GetComponent<Rigidbody2D>().velocity = new Vector2(0,0);
         obj.layer = 12;
     }
 }
