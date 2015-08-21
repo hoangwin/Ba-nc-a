@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MainMenu : MonoBehaviour {
@@ -6,20 +7,19 @@ public class MainMenu : MonoBehaviour {
 
 	public static MainMenu instance;
 	ManagerFish managerFish = new ManagerFish();
-    public UILabel LabelCoin;
-    public UILabel LabelBestCoin;
-    public UILabel LabelTimeAddCoin;
+    public Text LabelCoin;
+    public Text LabelBestCoin;
+    public Text LabelTimeAddCoin;
     public GameObject BGTimeAddCoin;
 
     public GameObject LabelRating;
     public GameObject LabelShareFB;
     public GameObject LabelAddCoinNotice;
-
-    public GameObject ButtonAdcoin;
-    public static bool iShowButtonAdcoin;
+    
+    
 	void Start () {
 		DEF.Init ();
-		DEF.ScaleAnchorGui();
+		//DEF.ScaleAnchorGui();
 		ScoreControl.loadGame();		
 		instance = this;
        
@@ -32,7 +32,7 @@ public class MainMenu : MonoBehaviour {
             ConnectCoinServer.isFishCheckBeginGame = true;
             AddCoinControl.isNeedCheckCoinInServer = true;
             Debug.Log("Check Coin");
-            ConnectCoinServer.instance.CheckAddCoininServer(); 
+         //   ConnectCoinServer.instance.CheckAddCoininServer(); 
         }
         ButtonControl.DialogState = ButtonControl.DIALOG_STATE_BUTON_MAINMENU;
         BGcontrol.setIndex(0);
@@ -51,7 +51,48 @@ public class MainMenu : MonoBehaviour {
             MainMenu.instance.LabelAddCoinNotice.SetActive(false);
         }
         checkShowAdcoin();
-	}	
+        
+	}
+
+    static public float timeShowAds = 0;
+    static public bool firstShowAdsFull = false;    
+    //--------------------------------------
+    //  EVE
+    public static void ShowADS_FULL()
+    {
+#if UNITY_ANDROID
+      
+
+        if (timeShowAds > 60 || !firstShowAdsFull)
+        {
+            firstShowAdsFull = true;
+            timeShowAds = 0;
+            using (AndroidJavaClass jc = new AndroidJavaClass("com.hunter.aircraft.UnityPlayerNativeActivity"))
+            {
+                jc.CallStatic<int>("ShowAdsFull");
+            }
+        }
+
+#elif UNITY_WP8
+        if (timeShowAds > 60 || !firstShowAdsFull)
+        {
+            firstShowAdsFull = true;
+            timeShowAds = 0;
+            WP8Statics.ShowAdsFull("");
+
+        }
+#elif UNITY_IOS
+        if (timeShowAds > 60 || !firstShowAdsFull)
+        {
+            firstShowAdsFull = true;
+            timeShowAds = 0;
+            IOsStatic.ShowAdsFull(" ", " ");
+        }
+#endif
+
+
+
+    }
 	// Update is called once per frame
 	void Update () {
         ScoreControl.UpdateTimerAddCoin(BGTimeAddCoin, LabelTimeAddCoin, LabelCoin);

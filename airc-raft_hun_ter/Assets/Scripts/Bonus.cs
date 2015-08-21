@@ -1,20 +1,22 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Bonus : MonoBehaviour {
 
     public GameObject GameBonus;
     public GameObject BonusAnim;
-    public GameObject Fish;
-    public Animator FishAnim;
-    public UILabel TimeLabel;
-    public UILabel FishCountLabel;
+    public Image Fish;
+   // public Animator FishAnim;
+    public Text TimeLabel;
+    public Text FishCountLabel;
+    public Sprite[] FishListSprite;
 
 	// Use this for initialization
-    public static int[] _BONUS_ARRAY_FISH_SCALE = {320, 200, 200, 200, 160, 160, 160, 120, 160, 80, 100, 100, 50, 50, 80 };
+    //public static int[] _BONUS_ARRAY_FISH_SCALE = {320, 200, 200, 200, 160, 160, 160, 120, 160, 80, 100, 100, 50, 50, 80 };
 
     public static int[] _BONUS_ARRAY_FISH_TYPE  = {01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15};
-    public static int[] _BONUS_ARRAY_FISH_COUNT = {50, 40, 32, 28, 25, 24, 23, 20, 18, 14, 12, 10, 04, 03, 02 };
+    public static int[] _BONUS_ARRAY_FISH_COUNT = {25, 22, 20, 18, 17, 15, 13, 10, 8, 7, 6, 5, 03, 02, 02 };
     
     public static float _TimeInBonus = 0f;
 
@@ -25,8 +27,8 @@ public class Bonus : MonoBehaviour {
     public bool _isBonusPlaying;
     public float _timeShowBonusAnim;
 
-    public static int _MIN_TIME = 30;
-    public static int _MAX_TIME = 90;
+    public static int _MIN_TIME = 4;
+    public static int _MAX_TIME = 5;
     public static Bonus instance;
 	void Start () {
         instance = this;
@@ -92,8 +94,9 @@ public class Bonus : MonoBehaviour {
         _MAX_FISH_COUNT = _BONUS_ARRAY_FISH_COUNT[_type];
         _CURRENT_FISH_COUNT = 0;
         _isBonusPlaying = true;
-        FishAnim.Play("Fish" + (_type+ 1).ToString() +"_Normal");
-        Fish.transform.localScale = new Vector3(_BONUS_ARRAY_FISH_SCALE[_type], _BONUS_ARRAY_FISH_SCALE[_type], 1);
+        Fish.sprite = FishListSprite[_type];
+        //FishAnim.Play("Fish" + (_type+ 1).ToString() +"_Normal");
+       // Fish.transform.localScale = new Vector3(_BONUS_ARRAY_FISH_SCALE[_type], _BONUS_ARRAY_FISH_SCALE[_type], 1);
         Debug.Log("_type :" +_type);                        
     }
     void checkCompletedBonus()
@@ -124,7 +127,7 @@ public class Bonus : MonoBehaviour {
         Debug.Log("Play Anim Adcoin");
         Bonus.instance.BonusAnim.SetActive(true);
         Bonus.instance._timeShowBonusAnim = 3;//2 second
-        Bonus.instance.BonusAnim.GetComponent<Animator>().Play("BonusAnimAddCoin");
+        Bonus.instance.BonusAnim.GetComponent<Animator>().Play("BonusAnim");
     }
 	// Update is called once per frame
 	

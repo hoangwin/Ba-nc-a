@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GamePlay : MonoBehaviour {
     public GameObject PanelPause;
+    public Vector3 PanelPauseTranFormBegin;
     public GameObject Gunner;
     public GameObject CoinPostion;
 	public ManagerFish managerFish;
@@ -23,12 +25,12 @@ public class GamePlay : MonoBehaviour {
 	
 	public static int STATE_INIT = 0;
 	public static bool isWin = true;
-	public UILabel LabelCoin;
-	public UILabel LabelBestCoin;
-    public UILabel LabelTimeAddCoin;
+	public Text LabelCoin;
+	public Text LabelBestCoin;
+    public Text LabelTimeAddCoin;
     public GameObject BGTimeAddCoin;
     public static int gameMode = 0;
-    public GameObject ButtonAdcoin;
+    
     void Awake()
     {
         // Make the game run as fast as possible in the web player
@@ -36,11 +38,12 @@ public class GamePlay : MonoBehaviour {
     }
 	void Start () {
 		DEF.Init();
+        PanelPauseTranFormBegin = new Vector3(0,PanelPause.transform.position.y,0);
+        PanelPause.transform.position = new Vector3(PanelPause.transform.position.x, -Screen.height / 2, PanelPause.transform.position.z);
         ///managerFish = gameObject.AddComponent<ManagerFish>();
-		//managerFish = new ManagerFish();
-		
+		//managerFish = new ManagerFish();		
 		instance = this;		
-		DEF.ScaleAnchorGui();
+		//DEF.ScaleAnchorGui();
 
 		//Physics2D.IgnoreLayerCollision (12, 12, true);
 		changeState(STATE_PLAY);      
@@ -54,17 +57,8 @@ public class GamePlay : MonoBehaviour {
         ButtonControl.state = 1;
         ButtonControl.DialogState = ButtonControl.DIALOG_STATE_GAME_PLAY;
         BGcontrol.setIndex(0);
-        
-        if ( MainMenu.iShowButtonAdcoin)
-        {        
-         //here   ButtonAdcoin.SetActive(true);
-          //  Debug.Log("Date : " + date);
-        }
-        else
-        {
-            ButtonAdcoin.SetActive(false);
-        }
-
+      
+        MainMenu.ShowADS_FULL();
 	}
     
 	// Update is called once per frame

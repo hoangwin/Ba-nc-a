@@ -20,21 +20,7 @@ public class AddCoinControl : MonoBehaviour {
 	void Update () {
 	
 	}
-    public void ButtonCloseAddCoinPress()
-    {
-        SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
-        if (ButtonControl.state == 0)
-        {
-            ButtonControl.instance.PanelUI.SetActive(true);
-            ButtonControl.DialogState =ButtonControl.DIALOG_STATE_BUTON_MAINMENU;
-        }
-        else
-        {
-            GamePlay.isShowFrameDiaLog = 2;//chuan bi dong
-            ButtonControl.DialogState = ButtonControl.DIALOG_STATE_GAME_PLAY;
-        }
-        ButtonControl.instance.PanelAddCoin.SetActive(false);
-    }
+   
 
     public void showPanelButtonSMS()
     {
@@ -65,12 +51,7 @@ public class AddCoinControl : MonoBehaviour {
         showPanelButtonCARD();
     }
     //close button
-    public void ButtonClosePress()
-    {
-        
-        ButtonControl.instance.PanelAddCoin.SetActive(false);
-        GamePlay.isShowFrameDiaLog = 2;//chuan bi dong
-    }
+   
 
     public void PanelButtonCARDPress10_000()
     {

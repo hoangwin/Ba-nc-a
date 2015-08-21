@@ -1,17 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class ButtonControl : MonoBehaviour {
 
-	// Use this for initialization    
-	public UIToggle soundToggle;
-    public UIToggle musicToggle;
-
-    public GameObject PanelAddCoin;
-
+    public Toggle toggleMusic;
+    public Toggle togglesfx;
     public GameObject PanelOption;
     public GameObject PanelInfo;
     public GameObject PanelUI;
+    public Image buttonIGM;
+    public Sprite buttonIGMUP;
+    public Sprite buttonIGMDOWN;
+    public Text[] textFishCollection;
     public static ButtonControl instance;
 
     public static int state = 0; //0 = main menu//1 = game play
@@ -26,31 +27,31 @@ public class ButtonControl : MonoBehaviour {
 
 
     void Start () {
-        EventDelegate.Add (soundToggle.onChange, OnSoundToggleChange);
-        EventDelegate.Add  (musicToggle.onChange, OnMusicToggleChange);
+        Debug.Log("aaaaaaaaaaaaa");
         instance = this;
+        
     }
    
     void OnDestroy () {
-        EventDelegate.Remove (soundToggle.onChange, OnSoundToggleChange);
-        EventDelegate.Remove  (musicToggle.onChange, OnMusicToggleChange);
     }
  
     // 1 = on , 2 = off
  
-    void OnSoundToggleChange() {
-        if (soundToggle.value ) {
+    public void OnSoundToggleChange(bool value ) {
+        if (togglesfx.isOn) {
             SoundEngine.isSoundSFX = true;
-            Debug .Log  ("sound toggle 1");
+        //    Debug .Log  ("sound toggle 1");
             SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
         } else {
             SoundEngine.isSoundSFX = false;
-            Debug .Log  ("sound toggle 2");
+         //   Debug .Log  ("sound toggle 2");
         }
         
     }
-    void OnMusicToggleChange() {
-        if (musicToggle.value ) {
+    public void OnMusicToggleChange(bool value)
+    {
+        if (toggleMusic.isOn)
+        {
             Debug .Log  ("music toggle 1");
             SoundEngine.isSoundMusic = true;
             SoundEngine.instance.PlayLoop(SoundEngine.instance._soundBG1);
@@ -66,8 +67,9 @@ public class ButtonControl : MonoBehaviour {
 	public void PuzzleButtonPress()
 	{
         GamePlay.gameMode = 0;
+        Application.LoadLevel("GamePlayScence");
         SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
-		Application.LoadLevel("GamePlayScence");
+		
     
 	}
 
@@ -129,14 +131,17 @@ public class ButtonControl : MonoBehaviour {
         SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
         HideAllDiaLog();
         if (GamePlay.isShowPauseMenu)
-        {            
-            iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", -6));
+        {
+            buttonIGM.sprite = buttonIGMUP;
+            iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", -Screen.height/2));
             GamePlay.isShowPauseMenu = !GamePlay.isShowPauseMenu;
             GamePlay.isShowFrameDiaLog = 2;//chuan bi dong //here
+
         }
         else
-        {            
-            iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", 1));
+        {
+            buttonIGM.sprite = buttonIGMDOWN;
+            iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", GamePlay.instance.PanelPauseTranFormBegin.y));
             GamePlay.isShowPauseMenu = !GamePlay.isShowPauseMenu;
             GamePlay.isShowFrameDiaLog = 3;//chuan bi dong //here
         }
@@ -144,8 +149,7 @@ public class ButtonControl : MonoBehaviour {
 	}
     public void HideAllDiaLog()
     {
-        if (PanelAddCoin != null)
-            PanelAddCoin.SetActive(false);
+      
 
         if (PanelOption != null)
             PanelOption.SetActive(false);
@@ -169,12 +173,12 @@ public class ButtonControl : MonoBehaviour {
     }
     public void showHelpBoard()
     {
-        SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
-        GameObject.Find("InfoNotice").GetComponent<UILabel>().text = "Coin Thưởng mỗi loại cá";
-        for (int i = 1; i < 16; i++)
-        {
-            GameObject.Find("LabelFish" + i.ToString()).GetComponent<UILabel>().text = Fish.coinArray[i - 1].ToString();
 
+        SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
+        //GameObject.Find("InfoNotice").GetComponent<UILabel>().text = "craft coin value";
+        for (int i = 0; i < 15; i++)
+        {
+            textFishCollection[i].text = Fish.coinArray[i].ToString();
         }
 
     }
@@ -195,11 +199,12 @@ public class ButtonControl : MonoBehaviour {
     }
     public void showInfoBoard()
     {
-
-        GameObject.Find("InfoNotice").GetComponent<UILabel>().text = "The number of fish you have fired";
-        for (int i = 1; i < 16; i++)
+        
+       // GameObject.Find("InfoNotice").GetComponent<UILabel>().text = "The number of fish you have fired";
+        for (int i = 0; i < 15; i++)
         {
-            GameObject.Find("LabelFish" + i.ToString()).GetComponent<UILabel>().text = ScoreControl._FishShooted[i - 1].ToString();
+            textFishCollection[i].text =  ScoreControl._FishShooted[i].ToString();
+            Debug.Log(i);
 
         }
     }
@@ -216,11 +221,11 @@ public class ButtonControl : MonoBehaviour {
         HideAllDiaLog();
         if (!SoundEngine.isSoundSFX)
         {
-            ButtonControl.instance.soundToggle.value = false;
+         //   ButtonControl.instance.soundToggle.value = false;
         }
         if (!SoundEngine.isSoundMusic)
         {
-            ButtonControl.instance.musicToggle.value = false;
+           // ButtonControl.instance.musicToggle.value = false;
         }
 
         SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
@@ -233,28 +238,7 @@ public class ButtonControl : MonoBehaviour {
         GamePlay.isShowFrameDiaLog = 3;//chuan bi dong
        
     }
-
-    public void ButtonAddCoinPress()
-    {
-        SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
-        DialogState = DIALOG_STATE_ADD_COIN;
-        HideAllDiaLog();
-        
-        if (GamePlay.isShowPauseMenu && DialogState == 1)
-        {
-            
-            iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", -6));
-            GamePlay.isShowPauseMenu = !GamePlay.isShowPauseMenu;
-
-        }
-
-        PanelAddCoin.SetActive(true);
-        AddCoinControl obj = PanelAddCoin.GetComponent<AddCoinControl>();
-        obj.showPanelButtonSMS();        
-        if(AddCoinControl.instance != null)
-            AddCoinControl.instance.LabelAdcoinNotive.text = " ";
-        GamePlay.isShowFrameDiaLog = 3;//la dang hien
-    }      
+     
 
     public void ButtonChangeGunLeft()
     {
@@ -330,13 +314,16 @@ public class ButtonControl : MonoBehaviour {
                 case ButtonControl.DIALOG_STATE_GAME_PLAY:
                     if (GamePlay.isShowPauseMenu)
                     {
-                        iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", -6));
+                        buttonIGM.sprite = buttonIGMUP;
+                        iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", -Screen.height / 2));
+                    //    iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", -6));
                         GamePlay.isShowPauseMenu = !GamePlay.isShowPauseMenu;
-
                     }
                     else
                     {
-                        iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", 1));
+                        buttonIGM.sprite = buttonIGMDOWN;
+                        iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", GamePlay.instance.PanelPauseTranFormBegin.y));
+                        //iTween.MoveTo(GamePlay.instance.PanelPause, iTween.Hash("y", 1));
                         GamePlay.isShowPauseMenu = !GamePlay.isShowPauseMenu;
                     }
                     break;
@@ -350,7 +337,7 @@ public class ButtonControl : MonoBehaviour {
                     ButtonControl.instance.ButtonCloseInfoPress();                    
                     break;
                 case ButtonControl.DIALOG_STATE_ADD_COIN:
-                    AddCoinControl.instance.ButtonCloseAddCoinPress();                    
+                   // AddCoinControl.instance.ButtonCloseAddCoinPress();                    
                     break;
 
             }
