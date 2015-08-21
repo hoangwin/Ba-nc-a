@@ -102,10 +102,10 @@ public class GamePlay : MonoBehaviour {
        }
        else
        {
-           if (ConnectCoinServer.instance!=null)
-           {
-               StartCoroutine(ConnectCoinServer.instance.CheckAddCoininServerApter3Second());
-           }
+          // if (ConnectCoinServer.instance!=null)
+          // {
+          //     StartCoroutine(ConnectCoinServer.instance.CheckAddCoininServerApter3Second());
+          // }
            // ConnectCoinServer.instance.CheckAddCoininServer(); 
            
        }

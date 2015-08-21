@@ -27,8 +27,8 @@ public class Bonus : MonoBehaviour {
     public bool _isBonusPlaying;
     public float _timeShowBonusAnim;
 
-    public static int _MIN_TIME = 4;
-    public static int _MAX_TIME = 5;
+    public static int _MIN_TIME = 30;
+    public static int _MAX_TIME = 90;
     public static Bonus instance;
 	void Start () {
         instance = this;

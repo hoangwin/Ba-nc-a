@@ -138,7 +138,7 @@ public class ScoreControl : MonoBehaviour {
         _strCoinBackup = _strCoinBackup.Replace('i', '8');
         _strCoinBackup = _strCoinBackup.Replace('j', '9');
 
-        Debug.Log("_strCoinBackup : " + _strCoinBackup);
+     //   Debug.Log("_strCoinBackup : " + _strCoinBackup);
         if (_strCoinBackup.Length > 1)
         {
             int temp = int.Parse(_strCoinBackup);
@@ -191,7 +191,7 @@ public class ScoreControl : MonoBehaviour {
             LabelTimeAddCoin.text = ((int)TimeWaittingAddCoin).ToString();
             if (TimeWaittingAddCoin < 0)
             {
-                ScoreControl.addCoind(5000);//here
+                ScoreControl.addCoind(50);//here
                 if (ScoreControl._Coin < ScoreControl._MAX_COIN_INIT)
                 {
                     TimeWaittingAddCoin = 10;

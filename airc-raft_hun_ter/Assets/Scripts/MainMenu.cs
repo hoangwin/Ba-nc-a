@@ -27,13 +27,7 @@ public class MainMenu : MonoBehaviour {
         LabelCoin.text = ScoreControl._Coin.ToString();
         LabelBestCoin.text = ScoreControl._BestCoin.ToString();
         ScoreControl.InitTimerAddCoin(BGTimeAddCoin, LabelTimeAddCoin, LabelCoin,LabelBestCoin);
-        if(ConnectCoinServer.isFishCheckBeginGame == false)
-        {
-            ConnectCoinServer.isFishCheckBeginGame = true;
-            AddCoinControl.isNeedCheckCoinInServer = true;
-            Debug.Log("Check Coin");
-         //   ConnectCoinServer.instance.CheckAddCoininServer(); 
-        }
+      
         ButtonControl.DialogState = ButtonControl.DIALOG_STATE_BUTON_MAINMENU;
         BGcontrol.setIndex(0);
 
@@ -106,15 +100,6 @@ public class MainMenu : MonoBehaviour {
         }
         else
         {
-            if (ConnectCoinServer.instance != null)
-            {
-                if (ConnectCoinServer.instance != null)
-                {
-                    StartCoroutine(ConnectCoinServer.instance.CheckAddCoininServerApter3Second());
-                    //ConnectCoinServer.instance.CheckAddCoininServer();
-                }
-                
-            }
           //  ScoreControl.saveGame();
         }
     }

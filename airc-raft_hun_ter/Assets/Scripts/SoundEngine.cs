@@ -22,7 +22,7 @@ public class SoundEngine : MonoBehaviour {
     {
         if (instance != null)
         {
-            Debug.Log("Destroy This");
+          //  Debug.Log("Destroy This");
             Destroy(this);
         }
         else

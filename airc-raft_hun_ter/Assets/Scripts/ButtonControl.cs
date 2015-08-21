@@ -27,7 +27,7 @@ public class ButtonControl : MonoBehaviour {
 
 
     void Start () {
-        Debug.Log("aaaaaaaaaaaaa");
+        //Debug.Log("aaaaaaaaaaaaa");
         instance = this;
         
     }
