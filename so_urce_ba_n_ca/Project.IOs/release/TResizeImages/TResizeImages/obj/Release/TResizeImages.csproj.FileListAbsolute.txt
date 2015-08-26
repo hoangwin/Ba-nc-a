@@ -1,8 +1,0 @@
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\bin\Release\TResizeImages.exe.config
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\bin\Release\TResizeImages.exe
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\bin\Release\TResizeImages.pdb
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Release\TResizeImages.Form1.resources
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Release\TResizeImages.Properties.Resources.resources
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Release\TResizeImages.csproj.GenerateResource.Cache
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Release\TResizeImages.exe
-G:\Dropbox\IOS\TOOL\TResizeImages\TResizeImages\obj\Release\TResizeImages.pdb
