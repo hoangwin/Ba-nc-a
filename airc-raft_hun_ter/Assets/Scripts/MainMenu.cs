@@ -106,20 +106,20 @@ public class MainMenu : MonoBehaviour {
     public void checkShowAdcoin()
     {
 #if UNITY_IPHONE
-			int expDate = 20140717;
-			int date = int.Parse(System.DateTime.Now.ToString("yyyyMMdd"));
-            iShowButtonAdcoin = false;
-			if (expDate <= date) {
-                iShowButtonAdcoin = true;
-               //here ButtonAdcoin.SetActive(true);
-				Debug.Log("Date : " + date);
-            }
-            else
-            {
-                ButtonAdcoin.SetActive(false);
-            }
+			//int expDate = 20140717;
+			//int date = int.Parse(System.DateTime.Now.ToString("yyyyMMdd"));
+            //iShowButtonAdcoin = false;
+			//if (expDate <= date) {
+            //    iShowButtonAdcoin = true;
+             
+			//	Debug.Log("Date : " + date);
+            //}
+            //else
+           // {
+            //    ButtonAdcoin.SetActive(false);
+            //}
 
-			Debug.Log("Tick: " + System.DateTime.Now.Ticks);
+	//		Debug.Log("Tick: " + System.DateTime.Now.Ticks);
 #endif
     }
 	void OnApplicationQuit ()

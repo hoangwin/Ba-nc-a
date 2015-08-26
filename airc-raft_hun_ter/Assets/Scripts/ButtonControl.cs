@@ -23,8 +23,8 @@ public class ButtonControl : MonoBehaviour {
     public const int DIALOG_STATE_INFO = 3;
     public const int DIALOG_STATE_ADD_COIN = 4;
     public const int DIALOG_STATE_GAME_PLAY = 5;
-    
 
+    public Text textInfo;
 
     void Start () {
         //Debug.Log("aaaaaaaaaaaaa");
@@ -175,7 +175,7 @@ public class ButtonControl : MonoBehaviour {
     {
 
         SoundEngine.instance.PlayOneShot(SoundEngine.instance._soundclick);
-        //GameObject.Find("InfoNotice").GetComponent<UILabel>().text = "craft coin value";
+         textInfo.text  = "AirCraft Value";
         for (int i = 0; i < 15; i++)
         {
             textFishCollection[i].text = Fish.coinArray[i].ToString();
@@ -199,8 +199,8 @@ public class ButtonControl : MonoBehaviour {
     }
     public void showInfoBoard()
     {
-        
-       // GameObject.Find("InfoNotice").GetComponent<UILabel>().text = "The number of fish you have fired";
+
+        textInfo.text = "Statitics";
         for (int i = 0; i < 15; i++)
         {
             textFishCollection[i].text =  ScoreControl._FishShooted[i].ToString();
