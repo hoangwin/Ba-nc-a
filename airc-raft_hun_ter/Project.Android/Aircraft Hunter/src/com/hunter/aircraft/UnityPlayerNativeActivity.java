@@ -60,7 +60,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		layout.addView(mUnityPlayer);
 		//layout.addView(adView,adsParams);			
 		
-		StartAppSDK.init(this, "106420618", "208256714");//, false);
+		StartAppSDK.init(this, "106318112", "207442093");//, false);
 		startAppAd = new StartAppAd(this);
 		showAdmobAds( this);
 		//showStartAppBanner();
@@ -86,7 +86,7 @@ public void showStartAppBanner()
 			@Override
 			public void run() {							
 				interstitial = new InterstitialAd(instance);
-				interstitial.setAdUnitId("ca-app-pub-7727165943990659/3465219920");
+				interstitial.setAdUnitId("ca-app-pub-1521173422394011/4678583683");
 				// Create ad request.
 				AdRequest adRequest = new AdRequest.Builder().build();
 				// Begin loading your interstitial.
@@ -148,7 +148,7 @@ public static  int ShowAdsFull()// goi tu unity sang
 			public void run() {
 				adView = new AdView(UnityPlayer.currentActivity);
 				adView.setAdSize(AdSize.BANNER);
-				adView.setAdUnitId("ca-app-pub-7727165943990659/8036424328");
+				adView.setAdUnitId("ca-app-pub-1521173422394011/6155316885");
 				// adView = new AdView(UnityPlayer.currentActivity,
 				// AdSize.SMART_BANNER, "a1531e034cf3eee");//hcgmobilegame
 
