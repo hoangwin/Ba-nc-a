@@ -55,16 +55,15 @@ public class GamePlay : MonoBehaviour {
         ButtonControl.DialogState = ButtonControl.DIALOG_STATE_GAME_PLAY;
         BGcontrol.setIndex(0);
         
-        if ( MainMenu.iShowButtonAdcoin)
-        {        
-         //here   ButtonAdcoin.SetActive(true);
-          //  Debug.Log("Date : " + date);
-        }
-        else
-        {
-            ButtonAdcoin.SetActive(false);
-        }
-
+   //     if ( MainMenu.iShowButtonAdcoin)
+   //     {        
+      
+   //     }
+  //      else
+   //     {
+   //         ButtonAdcoin.SetActive(false);
+   //     }
+        MainMenu.ShowADS_FULL();
 	}
     
 	// Update is called once per frame
@@ -108,10 +107,10 @@ public class GamePlay : MonoBehaviour {
        }
        else
        {
-           if (ConnectCoinServer.instance!=null)
-           {
-               StartCoroutine(ConnectCoinServer.instance.CheckAddCoininServerApter3Second());
-           }
+          // if (ConnectCoinServer.instance!=null)
+          // {
+          //     StartCoroutine(ConnectCoinServer.instance.CheckAddCoininServerApter3Second());
+          // }
            // ConnectCoinServer.instance.CheckAddCoininServer(); 
            
        }

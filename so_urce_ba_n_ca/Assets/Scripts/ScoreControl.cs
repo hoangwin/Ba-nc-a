@@ -42,7 +42,7 @@ public class ScoreControl : MonoBehaviour {
 	}
     public static void addCoind(int addcoin)
     {
-        Debug.Log("aaaaaaaaaaa");
+       // Debug.Log("aaaaaaaaaaa");
         //Debug.Log("Coin:" + ScoreControl._Coin);
         //Debug.Log("Coin1:" + ScoreControl._Coin1);
         if (_Coin == _Coin1 - OFFSET_COIN)
@@ -117,9 +117,9 @@ public class ScoreControl : MonoBehaviour {
         {
             _Coin = _MAX_COIN_INIT;
            
-            Debug.Log("_Coin : " + _Coin);
-            Debug.Log("_Coin1 : " + _Coin1);
-            Debug.Log("----------------");
+         //   Debug.Log("_Coin : " + _Coin);
+           // Debug.Log("_Coin1 : " + _Coin1);
+          //  Debug.Log("----------------");
         }
 		_Coin1 = _Coin + OFFSET_COIN;
 		if (_UserName.Length <= 4)

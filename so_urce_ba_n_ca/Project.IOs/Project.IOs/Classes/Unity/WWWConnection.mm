@@ -133,11 +133,11 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 		self->_estimatedLength	= contentLength > 0 ? contentLength : 0;
 
 		// status 2xx are all success
+		// in case of error status we do not cancel right away to actually get server response:
+		//   sometimes it might contain info useful for developers (custom webapp)
+		// instead we just keep on getting data while it is here and simply remember that there was error
 		if(self->_status / 100 != 2)
-		{
 			UnityReportWWWStatusError(self.udata, self->_status, [[NSHTTPURLResponse localizedStringForStatusCode: self->_status] UTF8String]);
-			[connection cancel];
-		}
 	}
 
 	UnityReportWWWReceivedResponse(self.udata, self->_status, self->_estimatedLength, [self->_responseHeader UTF8String]);
@@ -180,23 +180,31 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 }
 - (void)connection:(NSURLConnection*)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge
 {
-	BOOL authHandled = [self connection:connection handleAuthenticationChallenge:challenge];
-
-	if(authHandled == NO)
+	
+	if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodServerTrust) {
+		[challenge.sender performDefaultHandlingForAuthenticationChallenge:challenge];
+	}
+	else
 	{
-		self->_retryCount++;
 
-		// Empty user or password
-		if(self->_retryCount > 1 || self.user == nil || [self.user length] == 0 || self.password == nil || [self.password length]  == 0)
+		BOOL authHandled = [self connection:connection handleAuthenticationChallenge:challenge];
+
+		if(authHandled == NO)
 		{
-			[[challenge sender] cancelAuthenticationChallenge:challenge];
-			return;
+			self->_retryCount++;
+
+			// Empty user or password
+			if(self->_retryCount > 1 || self.user == nil || [self.user length] == 0 || self.password == nil || [self.password length]  == 0)
+			{
+				[[challenge sender] cancelAuthenticationChallenge:challenge];
+				return;
+			}
+
+			NSURLCredential* newCredential =
+				[NSURLCredential credentialWithUser:self.user password:self.password persistence:NSURLCredentialPersistenceNone];
+
+			[challenge.sender useCredential:newCredential forAuthenticationChallenge:challenge];
 		}
-
-		NSURLCredential* newCredential =
-			[NSURLCredential credentialWithUser:self.user password:self.password persistence:NSURLCredentialPersistenceNone];
-
-		[challenge.sender useCredential:newCredential forAuthenticationChallenge:challenge];
 	}
 }
 
@@ -247,7 +255,9 @@ extern "C" void* UnityStartWWWConnectionGet(void* udata, const void* headerDict,
 	NSMutableURLRequest* request =
 		[UnityWWWConnectionDelegate newRequestForHTTPMethod:@"GET" url:delegate.url headers:(__bridge NSDictionary*)headerDict];
 
-	delegate.connection = [NSURLConnection connectionWithRequest:request delegate:delegate];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		delegate.connection = [NSURLConnection connectionWithRequest:request delegate:delegate];
+	});
 	return (__bridge_retained void*)delegate;
 }
 
@@ -260,7 +270,10 @@ extern "C" void* UnityStartWWWConnectionPost(void* udata, const void* headerDict
 	[request setHTTPBody:[NSData dataWithBytes:data length:length]];
 	[request setValue:[NSString stringWithFormat:@"%d", length] forHTTPHeaderField:@"Content-Length"];
 
-	delegate.connection = [NSURLConnection connectionWithRequest:request delegate:delegate];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		delegate.connection = [NSURLConnection connectionWithRequest:request delegate:delegate];
+	});
+
 	return (__bridge_retained void*)delegate;
 }
 

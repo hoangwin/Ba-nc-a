@@ -31,8 +31,8 @@ public class BGcontrol : MonoBehaviour {
             index = 0;
         BGcontrol obj = GameObject.Find("MainBackGround").GetComponent<BGcontrol>();
         GameObject obj1 = GameObject.Find("game_bg_Thum");
-        Debug.Log(obj);
-        Debug.Log(GameObject.Find("MainBackGround"));
+        //Debug.Log(obj);
+       // Debug.Log(GameObject.Find("MainBackGround"));
         if (index == 0)
         {
             GameObject.Find("MainBackGround").GetComponent<SpriteRenderer>().sprite = obj.BG1;

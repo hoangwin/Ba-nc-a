@@ -13,7 +13,7 @@ public class IOsStatic : MonoBehaviour {
         NaticeStopAds(str1, str2);
     }
 
-    public static void ShowAds(string str1, string str2)
+    public static void ShowAdsFull(string str1, string str2)
     {
         NaticeShowAds(str1, str2);
     }

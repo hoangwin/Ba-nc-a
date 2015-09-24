@@ -52,7 +52,7 @@ public class MyAds : MonoBehaviour {
 	
     public static void GetADS()
     {
-        Debug.Log("1111111");
+      //  Debug.Log("1111111");
 #if UNITY_ANDROID
         GetHTML(Link+"ANDROID", (HandleCompleted)OnLoadDone);
 #elif UNITY_WP8
