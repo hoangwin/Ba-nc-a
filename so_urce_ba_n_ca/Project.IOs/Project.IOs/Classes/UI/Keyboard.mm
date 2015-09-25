@@ -16,11 +16,8 @@ static bool					_shouldHideInputChanged = false;
 	// in case of multi-line input we use UITextView with UIToolbar as accessory view
 	UITextView*		textView;
 	UITextField*	textField;
-	UIToolbar*		toolbar;
-
-	// keep toolbar items for both single- and multi- line edit in NSArray to make sure they are kept around
-	NSArray*		viewToolbarItems;
-	NSArray*		fieldToolbarItems;
+	UIToolbar*		viewToolbar;
+	UIToolbar*		fieldToolbar;
 
 	// inputView is view used for actual input (it will be responder): UITextField [single-line] or UITextView [multi-line]
 	// editView is the "root" view for keyboard: UIToolbar [single-line] or UITextView [multi-line]
@@ -126,16 +123,22 @@ static bool					_shouldHideInputChanged = false;
 		textField.font = [UIFont systemFontOfSize:20.0];
 		textField.clearButtonMode = UITextFieldViewModeWhileEditing;
 
-		toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0,160,320,64)];
-		toolbar.hidden = NO;
-		UnitySetViewTouchProcessing(toolbar, touchesIgnored);
+		viewToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0,160,320,64)];
+		viewToolbar.hidden = NO;
+		UnitySetViewTouchProcessing(viewToolbar, touchesIgnored);
+		
+		fieldToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0,160,320,64)];
+		fieldToolbar.hidden = NO;
+		UnitySetViewTouchProcessing(fieldToolbar, touchesIgnored);
 
-		UIBarButtonItem* inputItem	= [[UIBarButtonItem alloc] initWithCustomView:textField];
 		UIBarButtonItem* doneItem	= [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(textInputDone:)];
 		UIBarButtonItem* cancelItem	= [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(textInputCancel:)];
-
-		viewToolbarItems	= @[doneItem, cancelItem];
-		fieldToolbarItems	= @[inputItem, doneItem, cancelItem];
+		viewToolbar.items = @[doneItem, cancelItem];
+		
+		UIBarButtonItem* inputItem	= [[UIBarButtonItem alloc] initWithCustomView:textField];
+		doneItem	= [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(textInputDone:)];
+		cancelItem	= [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(textInputCancel:)];
+		fieldToolbar.items = @[inputItem, doneItem, cancelItem];
 
 		inputItem = nil;
 		doneItem = nil;
@@ -164,7 +167,9 @@ static bool					_shouldHideInputChanged = false;
 		[textView setAutocorrectionType: param.autocorrectionType];
 		[textView setSecureTextEntry: (BOOL)param.secure];
 		[textView setKeyboardAppearance: param.appearance];
-		textView.inputAccessoryView = toolbar;
+		textView.inputAccessoryView = viewToolbar;
+		inputView = textView;
+		editView = textView;
 	}
 	else
 	{
@@ -174,10 +179,9 @@ static bool					_shouldHideInputChanged = false;
 		[textField setAutocorrectionType: param.autocorrectionType];
 		[textField setSecureTextEntry: (BOOL)param.secure];
 		[textField setKeyboardAppearance: param.appearance];
+		inputView = textField;
+		editView = fieldToolbar;
 	}
-	toolbar.items	= _multiline ? viewToolbarItems : fieldToolbarItems;
-	inputView		= _multiline ? textView : textField;
-	editView		= _multiline ? textView : toolbar;
 
 	[self shouldHideInput:_shouldHideInput];
 

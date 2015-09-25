@@ -72,6 +72,9 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	{
 		self.url	= url.user != nil ? [self extractUserPassFromUrl:url] : url;
 		self.udata	= udata;
+
+		if([url.scheme caseInsensitiveCompare:@"http"] == NSOrderedSame)
+			NSLog(@"You are using download over http. Currently unity adds NSAllowsArbitraryLoads to Info.plist to simplify transition, but it will be removed soon. Please consider updating to https.");
 	}
 
 	return self;
@@ -106,6 +109,11 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	_data = nil;
 }
 
+- (void)finishProcessing
+{
+	self.connection = nil;
+	UnityReportWWWFinishedLoadingData(self.udata);
+}
 
 - (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response
 {
@@ -155,18 +163,21 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	UnityReportWWWReceivedData(self.udata, [self->_data length], self->_estimatedLength);
 
 	if(self.shouldAbort)
+	{
 		[connection cancel];
+		[self finishProcessing];
+	}
 }
 
 - (void)connection:(NSURLConnection*)connection didFailWithError:(NSError*)error
 {
 	UnityReportWWWFailedWithError(self.udata, [[error localizedDescription] UTF8String]);
+	[self finishProcessing];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection*)connection
 {
-	self.connection = nil;
-	UnityReportWWWFinishedLoadingData(self.udata);
+	[self finishProcessing];
 }
 
 - (void)connection:(NSURLConnection*)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
@@ -180,13 +191,11 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 }
 - (void)connection:(NSURLConnection*)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge
 {
-	
 	if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodServerTrust) {
 		[challenge.sender performDefaultHandlingForAuthenticationChallenge:challenge];
 	}
 	else
 	{
-
 		BOOL authHandled = [self connection:connection handleAuthenticationChallenge:challenge];
 
 		if(authHandled == NO)

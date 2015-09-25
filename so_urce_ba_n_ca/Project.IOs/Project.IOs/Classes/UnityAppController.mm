@@ -378,7 +378,6 @@ extern "C" {//here
 	{
 		[_snapshotView removeFromSuperview];
 		_snapshotView = nil;
-		[_window bringSubviewToFront:_rootView];
 	}
 
 	if(_unityAppReady)
@@ -422,10 +421,7 @@ extern "C" {//here
 
 			_snapshotView = [self createSnapshotView];
 			if(_snapshotView)
-			{
-				[_window addSubview:_snapshotView];
-				[_window bringSubviewToFront:_snapshotView];
-			}
+				[_rootView addSubview:_snapshotView];
 		}
 	}
 

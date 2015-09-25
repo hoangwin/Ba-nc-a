@@ -277,7 +277,7 @@ void			UnityGetJoystickAxisName(int idx, int axis, char* buffer, int maxLen);
 void			UnityGetNiceKeyname(int key, char* buffer, int maxLen);
 
 // UnityAppController+Rendering.mm
-void			UnityInitMainScreenRenderingCallback(int* screenWidth, int* screenHeight);
+void			UnityInitMainScreenRenderingCallback();
 void			UnityGfxInitedCallback();
 void			UnityPresentContextCallback(struct UnityFrameStats const* frameStats);
 void			UnityFramerateChangeCallback(int targetFPS);

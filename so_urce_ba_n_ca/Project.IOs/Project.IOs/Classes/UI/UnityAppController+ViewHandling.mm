@@ -108,18 +108,10 @@ extern bool _unityAppReady;
 
 - (UIView*)createSnapshotView
 {
-	UIView* ret = nil;
-	if([_rootView respondsToSelector:@selector(snapshotViewAfterScreenUpdates:)])
-	{
-		ret = [_rootView snapshotViewAfterScreenUpdates:YES];
-		if(!_ios80orNewer)
-		{
-			// on pre-ios8 we need to take extra care about properly orienting snapshot view
-			ret.transform	= _rootView.transform;
-			ret.center		= _rootView.center;
-		}
-	}
-	return ret;
+	// snapshot api appeared on ios7
+	// BUT on ios7 tweaking hierarchy like that on going to background results in all kind of weird things when going back to foreground
+	// so do snapshotting only on ios8 and newer
+	return _ios80orNewer ? [_rootView snapshotViewAfterScreenUpdates:YES] : nil;
 }
 
 - (void)createUI

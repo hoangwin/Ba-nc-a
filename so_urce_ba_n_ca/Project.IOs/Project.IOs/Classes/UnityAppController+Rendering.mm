@@ -130,19 +130,18 @@ extern "C" void UnityFramerateChangeCallback(int targetFPS)
 	[GetAppController() callbackFramerateChange:targetFPS];
 }
 
-extern "C" void UnityInitMainScreenRenderingCallback(int* screenWidth, int* screenHeight)
+extern "C" void UnityInitMainScreenRenderingCallback()
 {
-	extern void QueryTargetResolution(int* targetW, int* targetH);
+	{
+		extern void QueryTargetResolution(int* targetW, int* targetH);
 
-	int resW=0, resH=0;
-	QueryTargetResolution(&resW, &resH);
-	UnityRequestRenderingResolution(resW, resH);
+		int resW=0, resH=0;
+		QueryTargetResolution(&resW, &resH);
+		UnityRequestRenderingResolution(resW, resH);
+	}
 
 	DisplayConnection* display = GetAppController().mainDisplay;
 	[display initRendering];
-
-	*screenWidth	= resW;
-	*screenHeight	= resH;
 }
 
 
@@ -238,6 +237,9 @@ extern "C" void UnityRepaint()
 {
 	@autoreleasepool
 	{
+		// this will handle running on metal just fine (nop)
+		EAGLContextSetCurrentAutoRestore autorestore(GetMainDisplaySurface());
+
 		Profiler_FrameStart();
 		UnityInputProcess();
 
