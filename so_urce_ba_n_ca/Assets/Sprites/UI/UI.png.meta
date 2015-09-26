@@ -1,7 +1,23 @@
 fileFormatVersion: 2
 guid: a31fb4ada9c9bf04988f11e184e496f2
+timeCreated: 1443191719
+licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: UI_0
+    21300002: UI_1
+    21300004: UI_2
+    21300006: UI_3
+    21300008: UI_4
+    21300010: UI_5
+    21300012: UI_6
+    21300014: UI_7
+    21300016: UI_8
+    21300018: UI_9
+    21300020: UI_10
+    21300022: UI_11
+    21300024: UI_12
+    21300026: UI_13
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -35,6 +51,7 @@ TextureImporter:
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
+  allowsAlphaSplitting: 0
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
@@ -49,6 +66,7 @@ TextureImporter:
     maxTextureSize: 1024
     textureFormat: -3
     compressionQuality: 50
+    allowsAlphaSplitting: 0
   spriteSheet:
     sprites:
     - name: UI_0
@@ -84,20 +102,20 @@ TextureImporter:
     - name: UI_3
       rect:
         serializedVersion: 2
-        x: 36
-        y: 625
-        width: 473
-        height: 310
+        x: 38
+        y: 622
+        width: 481
+        height: 323
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: UI_4
       rect:
         serializedVersion: 2
-        x: 559
-        y: 958
-        width: 227
-        height: 57
+        x: 347
+        y: 442
+        width: 101
+        height: 104
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,20 +152,20 @@ TextureImporter:
     - name: UI_8
       rect:
         serializedVersion: 2
-        x: 39
-        y: 465
-        width: 214
-        height: 109
+        x: 59
+        y: 509
+        width: 176
+        height: 61
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: UI_9
       rect:
         serializedVersion: 2
-        x: 227
-        y: 409
-        width: 141
-        height: 41
+        x: 91
+        y: 396
+        width: 101
+        height: 104
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,8 +194,8 @@ TextureImporter:
         serializedVersion: 2
         x: 926
         y: 656
-        width: 83
-        height: 332
+        width: 82
+        height: 333
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}

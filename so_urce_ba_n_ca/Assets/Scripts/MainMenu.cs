@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MainMenu : MonoBehaviour {
@@ -6,20 +7,19 @@ public class MainMenu : MonoBehaviour {
 
 	public static MainMenu instance;
 	ManagerFish managerFish = new ManagerFish();
-    public UILabel LabelCoin;
-    public UILabel LabelBestCoin;
-    public UILabel LabelTimeAddCoin;
+    public Text LabelCoin;
+    public Text LabelBestCoin;
+    public Text LabelTimeAddCoin;
     public GameObject BGTimeAddCoin;
 
     public GameObject LabelRating;
     public GameObject LabelShareFB;
     public GameObject LabelAddCoinNotice;
-
-    public GameObject ButtonAdcoin;
-    public static bool iShowButtonAdcoin;
+    
+    
 	void Start () {
 		DEF.Init ();
-		DEF.ScaleAnchorGui();
+		//DEF.ScaleAnchorGui();
 		ScoreControl.loadGame();		
 		instance = this;
        
@@ -27,13 +27,7 @@ public class MainMenu : MonoBehaviour {
         LabelCoin.text = ScoreControl._Coin.ToString();
         LabelBestCoin.text = ScoreControl._BestCoin.ToString();
         ScoreControl.InitTimerAddCoin(BGTimeAddCoin, LabelTimeAddCoin, LabelCoin,LabelBestCoin);
-        //if(ConnectCoinServer.isFishCheckBeginGame == false)
-        //{
-        //    ConnectCoinServer.isFishCheckBeginGame = true;
-        //    AddCoinControl.isNeedCheckCoinInServer = true;
-        //    Debug.Log("Check Coin");
-        //    ConnectCoinServer.instance.CheckAddCoininServer(); 
-        //}
+      
         ButtonControl.DialogState = ButtonControl.DIALOG_STATE_BUTON_MAINMENU;
         BGcontrol.setIndex(0);
 
@@ -82,7 +76,6 @@ public class MainMenu : MonoBehaviour {
 
         }
 #elif UNITY_IOS
-        Debug.Log("aaaa");
         if (timeShowAds > 60 || !firstShowAdsFull)
         {
             firstShowAdsFull = true;
@@ -107,15 +100,6 @@ public class MainMenu : MonoBehaviour {
         }
         else
         {
-       //     if (ConnectCoinServer.instance != null)
-       //     {
-       //         if (ConnectCoinServer.instance != null)
-       //         {
-       //             StartCoroutine(ConnectCoinServer.instance.CheckAddCoininServerApter3Second());
-         
-       //         }
-                
-       //     }
           //  ScoreControl.saveGame();
         }
     }

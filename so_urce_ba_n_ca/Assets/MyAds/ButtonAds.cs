@@ -60,7 +60,7 @@ public class ButtonAds : MonoBehaviour
     {
 
         //        SoundEngine.isSoundMusic = !SoundEngine.isSoundMusic;
-
+        Debug.Log("BUtton ads");
         if (index == 0)
             Application.OpenURL("http://www.aegamemobile.com/");
         else

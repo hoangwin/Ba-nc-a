@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class ScoreControl : MonoBehaviour {
@@ -161,7 +162,7 @@ public class ScoreControl : MonoBehaviour {
         TimeWaittingAddCoin = PlayerPrefs.GetFloat(_STRING_ASSET_TIME_WATTING_ADD_COIN);
 	}
 
-    public static void InitTimerAddCoin(GameObject BGTimeAddCoin, UILabel LabelTimeAddCoin, UILabel LabelCoin, UILabel LabelBestCoin)
+    public static void InitTimerAddCoin(GameObject BGTimeAddCoin, Text  LabelTimeAddCoin, Text LabelCoin, Text LabelBestCoin)
     {
         if (TimeWaittingAddCoin == 0 && ScoreControl._Coin < 300)
         {
@@ -181,15 +182,16 @@ public class ScoreControl : MonoBehaviour {
             BGTimeAddCoin.SetActive(false);
         }
     }
-    public static void UpdateTimerAddCoin(GameObject BGTimeAddCoin, UILabel LabelTimeAddCoin, UILabel LabelCoin)
+    public static void UpdateTimerAddCoin(GameObject BGTimeAddCoin, Text LabelTimeAddCoin, Text LabelCoin)
     {
+        
         if (TimeWaittingAddCoin > 0)
         {
             TimeWaittingAddCoin -= Time.deltaTime;
             LabelTimeAddCoin.text = ((int)TimeWaittingAddCoin).ToString();
             if (TimeWaittingAddCoin < 0)
             {
-                ScoreControl.addCoind(50);
+                ScoreControl.addCoind(50);//here
                 if (ScoreControl._Coin < ScoreControl._MAX_COIN_INIT)
                 {
                     TimeWaittingAddCoin = 10;

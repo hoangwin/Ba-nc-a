@@ -80,13 +80,13 @@ public class MyAds : MonoBehaviour {
         if (www.error == null)
         {
             STR_LOAD = www.text;
-            Debug.Log("OK");
+           // Debug.Log("OK");
             onCompleted();
         }
         else
         {
             STR_LOAD = null;
-            Debug.Log("error");
+           // Debug.Log("error");
             onCompleted();
         }
     }
@@ -138,7 +138,7 @@ public class MyAds : MonoBehaviour {
             
             if (_index == 1)
             {
-                Debug.Log(1);
+               // Debug.Log(1);
                 
                 sprite1 = Sprite.Create(loader.texture, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 1);
                 isLoad[0] = true;              
@@ -146,7 +146,7 @@ public class MyAds : MonoBehaviour {
             }
             else if (_index == 2)
             {
-                Debug.Log(2);
+              //  Debug.Log(2);
                 sprite2 = Sprite.Create(loader.texture, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 1);
                 isLoad[1] = true;
                
