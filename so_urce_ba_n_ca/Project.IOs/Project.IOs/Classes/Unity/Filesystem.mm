@@ -50,7 +50,9 @@ extern "C" const char* const* UnityFontFallbacks()
 	*/
 	static const char* const fonts[] = {
 		"Hiragino Kaku Gothic ProN", // Japanese characters
-		"Heiti TC",				// Chinese characters (on 9.0 OS substitutes this with "PingFang TC")
+		"Heiti TC",				// Traditional Chinese characters (on 9.0 OS substitutes this with "PingFang TC")
+		"Heiti SC",				// Simplified Chinese characters (on 9.0 OS substitutes this with "PingFang SC")
+		"AppleSDGothic Neo",	// Korean characters
 		".Sukhumvit Set UI",	// Thai characters on 8.2
 		"AppleGothic",
 		"Noto Sans Yi",			// Yi characters on 9.0

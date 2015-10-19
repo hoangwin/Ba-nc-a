@@ -61,7 +61,7 @@ public class MainMenu : MonoBehaviour {
         {
             firstShowAdsFull = true;
             timeShowAds = 0;
-            using (AndroidJavaClass jc = new AndroidJavaClass("com.hunter.aircraft.UnityPlayerNativeActivity"))
+            using (AndroidJavaClass jc = new AndroidJavaClass("com.mygame.bancaanxuhd.UnityPlayerNativeActivity"))
             {
                 jc.CallStatic<int>("ShowAdsFull");
             }
