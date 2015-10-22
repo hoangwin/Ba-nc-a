@@ -19,6 +19,8 @@ public class MainMenu : MonoBehaviour {
             DontDestroyOnLoad(SoundEngine.soundclick);
         }
         DEF.scaleFixImagetoScreen(background);
+        AnimControl.instance.MenuBegin();
+        //Debug.Log("aaaaaaaaa");
 	}	
 	// Update is called once per frame
 	void Update () {

@@ -192,7 +192,7 @@
     </Reference>
     <Reference Include="GoogleAds, Version=6.5.13.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\com.vserv.windows.ads.wp8.3.1.5\lib\wp8\Mediation Partners\AdMob\GoogleAds.dll</HintPath>
+      <HintPath>C:\Users\CaoGia\Desktop\windowsphone8\GoogleAds.dll</HintPath>
     </Reference>
     <Reference Include="InMobiWPAdSDK">
       <HintPath>..\ads\InMobi_Windows_AdSDK_200\Windows Phone 8\InMobi_WP_SDK_203\libs\InMobiWPAdSDK.dll</HintPath>
@@ -225,9 +225,6 @@
     </Reference>
     <Reference Include="GoogleAds">
       <HintPath>GoogleAds.dll</HintPath>
-    </Reference>
-    <Reference Include="GoogleAdsWP8">
-      <HintPath>GoogleAdsWP8.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\com.vserv.windows.ads.wp8.3.1.5\lib\wp8\VMAX\Newtonsoft.Json.dll</HintPath>

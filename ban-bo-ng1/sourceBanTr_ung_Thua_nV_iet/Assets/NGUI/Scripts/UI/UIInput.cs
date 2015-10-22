@@ -174,8 +174,8 @@ public class UIInput : MonoBehaviour
 			{
 				string val = mKeyboard.text;
 #if !UNITY_3_5
-				if (Application.platform == RuntimePlatform.BB10Player)
-					val = val.Replace("\\b", "\b");
+				//if (Application.platform == RuntimePlatform.BB10Player)
+				//	val = val.Replace("\\b", "\b");
 #endif
 				return val;
 			}
@@ -272,7 +272,7 @@ public class UIInput : MonoBehaviour
 #if MOBILE
 	protected int cursorPosition { get { return value.Length; } }
 #else
-	protected int cursorPosition { get { return (isSelected && mEditor != null) ? mEditor.selectPos : value.Length; } }
+    protected int cursorPosition { get { return (isSelected && mEditor != null) ? mEditor.selectIndex : value.Length; } }
 #endif
 
 	/// <summary>
@@ -425,8 +425,8 @@ public class UIInput : MonoBehaviour
 			string val = mKeyboard.text;
 #if !UNITY_3_5
 			// BB10's implementation has a bug in Unity
-			if (Application.platform == RuntimePlatform.BB10Player)
-				val = val.Replace("\\b", "\b");
+			//if (Application.platform == RuntimePlatform.BB10Player)
+			//	val = val.Replace("\\b", "\b");
 #endif
 			if (mValue != val)
 			{
@@ -605,8 +605,8 @@ public class UIInput : MonoBehaviour
 				if (ctrl && label != null && label.overflowMethod != UILabel.Overflow.ClampContent)
 				{
 					char c = '\n';
-					if (onValidate != null) c = onValidate(mEditor.content.text, mEditor.selectPos, c);
-					else if (validation != Validation.None) c = Validate(mEditor.content.text, mEditor.selectPos, c);
+                    if (onValidate != null) c = onValidate(mEditor.content.text, mEditor.selectIndex, c);
+                    else if (validation != Validation.None) c = Validate(mEditor.content.text, mEditor.selectIndex, c);
 
 					// Append the character
 					if (c != 0)
@@ -667,8 +667,8 @@ public class UIInput : MonoBehaviour
 				if (characterLimit > 0 && mEditor.content.text.Length >= characterLimit) continue;
 
 				// If we have an input validator, validate the input first
-				if (onValidate != null) c = onValidate(mEditor.content.text, mEditor.selectPos, c);
-				else if (validation != Validation.None) c = Validate(mEditor.content.text, mEditor.selectPos, c);
+                if (onValidate != null) c = onValidate(mEditor.content.text, mEditor.selectIndex, c);
+                else if (validation != Validation.None) c = Validate(mEditor.content.text, mEditor.selectIndex, c);
 
 				// If the input is invalid, skip it
 				if (c == 0) continue;

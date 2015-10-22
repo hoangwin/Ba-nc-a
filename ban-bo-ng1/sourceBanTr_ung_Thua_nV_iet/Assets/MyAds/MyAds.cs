@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MyAds : MonoBehaviour {
 
+    //public static Image image1;
     public static Sprite sprite1;
     public static Sprite sprite2;
     public static Sprite sprite3;
@@ -14,6 +16,7 @@ public class MyAds : MonoBehaviour {
     public static HandleFailed onFailed;
     public static string[,] AdsInfoArray = new string[3, 3];// toi da la 3 quang cao
     public static bool[] isLoad = { false, false, false };
+    public static bool isFistTime = false;
     //huong dan
     //AdsInfoArray[0,x] = quang cao 1
     //AdsInfoArray[0,0] = Ten Quang cao 1
@@ -135,9 +138,9 @@ public class MyAds : MonoBehaviour {
             if (_index == 1)
             {
                 Debug.Log(1);
+                
                 sprite1 = Sprite.Create(loader.texture, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 1);
-                isLoad[0] = true;
-              
+                isLoad[0] = true;              
                 
             }
             else if (_index == 2)
@@ -153,6 +156,13 @@ public class MyAds : MonoBehaviour {
                 sprite3 = Sprite.Create(loader.texture, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 1);
                 isLoad[2] = true;
                 
+            }
+            if (!isFistTime)
+            {
+                isFistTime = true;
+                ButtonAds.index = _index - 1;// de qua kia ++ -> hop li
+                ButtonAds.time = 0;
+                ButtonAds.instance.setNewAds();
             }
          //   if (_index == MAX_ADS)
          //       isLoad = true;

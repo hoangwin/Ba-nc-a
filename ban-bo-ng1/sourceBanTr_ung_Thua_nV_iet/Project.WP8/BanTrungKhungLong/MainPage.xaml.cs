@@ -131,11 +131,20 @@ namespace BanTrungKhungLong
         void AdmobFullAdsShow()
         {
             //  if (interstitialAd == null)
-            {
+           // {
                 interstitialAd = new InterstitialAd("ca-app-pub-7413680112188055/4861557728");//mobilewp8
                 interstitialAd.ReceivedAd += OnAdReceivedFull;
                 interstitialAd.FailedToReceiveAd += OnFailedToReceiveAdFull;
-            }
+
+                //dung dog rem o duoi cung dc
+            //    Deployment.Current.Dispatcher.BeginInvoke(() =>
+            //    {
+            //        interstitialAd = new InterstitialAd("ca-app-pub-7413680112188055/4861557728");//mobilewp8
+            //        interstitialAd.ReceivedAd += OnAdReceivedFull;
+            //        interstitialAd.FailedToReceiveAd += OnFailedToReceiveAdFull;
+            //        interstitialAd.LoadAd(adRequest);
+            //    });
+           // }
             //adRequest.ForceTesting = true;//here to rem
             interstitialAd.LoadAd(adRequest);
         }

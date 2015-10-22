@@ -22,17 +22,17 @@ public class SoundEngine : MonoBehaviour {
 				//	 Debug.Log("Play Sound");
                 if(str.Equals("SoundCoin"))
                 {
-                    if(!sound.audio.isPlaying)
-                        sound.audio.Play ();
+                    if(!sound.GetComponent<AudioSource>().isPlaying)
+                        sound.GetComponent<AudioSource>().Play ();
                 }
                 else if (str.Equals("SoundClick"))
                 {
                     if(soundclick!= null)
-                        soundclick.audio.Play();
+                        soundclick.GetComponent<AudioSource>().Play();
                 }
 
                 else
-                    sound.audio.Play();
+                    sound.GetComponent<AudioSource>().Play();
 			}
 		}
 	}

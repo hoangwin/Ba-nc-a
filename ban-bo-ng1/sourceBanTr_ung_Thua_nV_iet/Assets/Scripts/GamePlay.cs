@@ -56,12 +56,11 @@ public class GamePlay : MonoBehaviour {
         GameObject.Find("WallBottom").layer = 12;
 		Physics2D.IgnoreLayerCollision (12, 12, true);
 		changeState(STATE_PLAY);
-		LabelLevel = GameObject.Find("LabelLevel").GetComponent<UILabel>();	
-		LabelScore = GameObject.Find("LabelScore").GetComponent<UILabel>();
+
         LabelLevel.text = LevelManager.currentLevel.ToString() + "\nMàn";
 		LabelScore.text ="0\nĐiểm";
         GameObject obj = GameObject.Find("AnimGunner");
-        GunnerAnim = obj.GetComponent<Animator>();
+       
         BubblePre.layer = 12;
 	}
 	
@@ -215,7 +214,7 @@ public class GamePlay : MonoBehaviour {
                     SoundEngine.playSound("SoundShoot");
                     LevelManager.countbubbleShoot++;
                     GunnerAnim.Play("GUNNER_SHOOT");
-                    LevelManager.currentBubble.rigidbody2D.velocity = fingerPos;//
+                    LevelManager.currentBubble.GetComponent<Rigidbody2D>().velocity = fingerPos;//
                     LevelManager.currentBubble.GetComponent<Bubble>().currentvelocity = fingerPos;//
                     LevelManager.currentBubble.transform.eulerAngles = new Vector3(0, 0, 0);
                     LevelManager.currentBubble.GetComponent<Bubble>().state = Bubble.STATE_BUBBLE_SHOOT;

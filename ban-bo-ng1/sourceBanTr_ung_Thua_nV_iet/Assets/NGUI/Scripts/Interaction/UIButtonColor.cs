@@ -1,6 +1,6 @@
 //----------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2013 Tasharen Entertainment
+// Copyright Â© 2011-2013 Tasharen Entertainment
 //----------------------------------------------
 
 using UnityEngine;
@@ -110,7 +110,7 @@ public class UIButtonColor : UIWidgetContainer
 		}
 		else
 		{
-			Renderer ren = tweenTarget.renderer;
+			Renderer ren = tweenTarget.GetComponent<Renderer>();
 
 			if (ren != null)
 			{
@@ -118,7 +118,7 @@ public class UIButtonColor : UIWidgetContainer
 			}
 			else
 			{
-				Light lt = tweenTarget.light;
+				Light lt = tweenTarget.GetComponent<Light>();
 
 				if (lt != null)
 				{
