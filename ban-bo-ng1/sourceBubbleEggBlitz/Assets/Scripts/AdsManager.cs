@@ -35,7 +35,7 @@ public class AdsManager : MonoBehaviour
         {
             firstShowAdsFull = true;
             timeShowAds = 0;
-            using (AndroidJavaClass jc = new AndroidJavaClass("org.xiaxio.bubbleshoot.UnityPlayerNativeActivity"))
+            using (AndroidJavaClass jc = new AndroidJavaClass("com.bubble.eggblitz.UnityPlayerNativeActivity"))
             {
                 jc.CallStatic<int>("ShowAdsFull");
             }
