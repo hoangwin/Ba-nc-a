@@ -86,7 +86,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		
 		StartAppSDK.init(this, "106420618", "208256714");//, false);
 		startAppAd = new StartAppAd(this);
-	//	showAdmobAds( this);
+		showAdmobAds( this);
 		//showStartAppBanner();
 		//InMobi.initialize(this, "faa84edfbcf049b9ad39a5b7dc6057a9");
 		
