@@ -44,29 +44,14 @@ public class UnityPlayerActivity extends Activity
 		instance = this;
 		layout = new FrameLayout(this);
 		layout.setPadding(0, 0, 0, 0);
-
 			//instance.ShowAdmobFull();
 		layout.addView(mUnityPlayer);
-
 		showAdmobAds( this);
-
 		//showStartAppBanner();
-
-
 		setContentView(layout);
-
 		//setContentView(mUnityPlayer);
 		//showAdmobAds(this);
 		mUnityPlayer.requestFocus();
-
-
-//
-
-//
-		//AdView mAdView = (AdView) findViewById(R.id.adView);
-	//	AdRequest adRequest = new AdRequest.Builder().build();
-//		mAdView.loadAd(adRequest);
-
 	}
 	public static  int ShowAdsFull()// goi tu unity sang
 	{
