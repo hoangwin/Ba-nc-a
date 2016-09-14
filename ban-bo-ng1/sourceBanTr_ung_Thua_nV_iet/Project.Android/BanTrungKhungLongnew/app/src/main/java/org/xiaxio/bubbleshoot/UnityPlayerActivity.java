@@ -4,6 +4,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.unity3d.player.*;
 import android.app.Activity;
@@ -24,6 +25,7 @@ public class UnityPlayerActivity extends Activity
 	protected UnityPlayer mUnityPlayer; // don't change the name of this variable; referenced from native code
 	static FrameLayout layout ;
 	public static AdView adView ;
+	private InterstitialAd interstitial;
 	static FrameLayout.LayoutParams adsParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, android.view.Gravity.BOTTOM | android.view.Gravity.CENTER);
 	// Setup activity layout
 	@Override protected void onCreate (Bundle savedInstanceState)
@@ -59,6 +61,13 @@ public class UnityPlayerActivity extends Activity
 	//	AdRequest adRequest = new AdRequest.Builder().build();
 //		mAdView.loadAd(adRequest);
 
+	}
+	public static  int ShowAdsFull()// goi tu unity sang
+	{
+
+		//UnityPlayerNativeActivity.ShowChartboost();
+		instance.ShowAdmobFull();
+		return 1;
 	}
 	public static boolean isFirstShowAdmob = true;
 	public static void showAdmobAds(final UnityPlayerActivity activity) {
@@ -109,10 +118,61 @@ public class UnityPlayerActivity extends Activity
 			}
 		});
 	}
+
+	public void ShowAdmobFull()// goi tu ben unity sang
+	{
+		Log.d("Admob", "MRAID InApp Ad is calling..");
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				interstitial = new InterstitialAd(instance);
+				interstitial.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+				// Create ad request.
+				AdRequest adRequest = new AdRequest.Builder().build();
+				// Begin loading your interstitial.
+				interstitial.loadAd(adRequest);
+
+				interstitial.setAdListener(new AdListener() {
+					@Override
+					public void onAdLoaded() {
+						if (interstitial.isLoaded()) {
+							interstitial.show();
+						}
+						Log.d("Admob onAdLoaded", "onAdLoaded");
+					}
+
+					public void onAdFailedToLoad(int errorCode) {
+						Log.d("Admob onAdFailedToLoad", "onAdFailedToLoad");
+						//instance.ShowChartboost();
+					//	loadInterstitialAdFaceBook(instance);
+						//ShowStarAppFull();
+					}
+
+					public void onAdOpened() {
+						Log.d("Admob onAdOpened", "onAdOpened");
+
+					}
+
+					public void onAdClosed() {
+						Log.d("Admob onAdClosed", "onAdClosed");
+						//AdRequest adRequest = new AdRequest.Builder().build();
+						//interstitial.loadAd(adRequest);
+					}
+					public void onAdLeftApplication() {
+						Log.d("Admob onAdLeftAppli", "onAdLeftApplication");
+					}
+				});
+			}
+		});
+
+	}
 	// Quit Unity
 	@Override protected void onDestroy ()
 	{
 		mUnityPlayer.quit();
+		if (adView != null) {
+			adView.resume();
+		}
 		super.onDestroy();
 	}
 
@@ -120,6 +180,9 @@ public class UnityPlayerActivity extends Activity
 	@Override protected void onPause()
 	{
 		super.onPause();
+		if (adView != null) {
+			adView.pause();
+		}
 		mUnityPlayer.pause();
 	}
 
@@ -127,6 +190,9 @@ public class UnityPlayerActivity extends Activity
 	@Override protected void onResume()
 	{
 		super.onResume();
+		if (adView != null) {
+			adView.resume();
+		}
 		mUnityPlayer.resume();
 	}
 
