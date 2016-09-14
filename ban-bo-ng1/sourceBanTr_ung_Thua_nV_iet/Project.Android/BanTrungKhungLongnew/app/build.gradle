@@ -23,6 +23,7 @@ dependencies {
 
    // compile 'com.google.firebase:firebase-core:9.4.0'
     compile 'com.google.android.gms:play-services-ads:9.4.0'
+    compile 'com.facebook.android:audience-network-sdk:4.+'
 }
 // ADD THIS AT THE BOTTOM
 //apply plugin: 'com.google.gms.google-services'

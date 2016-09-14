@@ -19,13 +19,18 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class UnityPlayerActivity extends Activity
 {
 	public static UnityPlayerActivity instance;
 	protected UnityPlayer mUnityPlayer; // don't change the name of this variable; referenced from native code
 	static FrameLayout layout ;
 	public static AdView adView ;
+	private com.facebook.ads.AdView adViewFaceBook;
 	private InterstitialAd interstitial;
+	public static com.facebook.ads.InterstitialAd interstitialFaceBook;
 	static FrameLayout.LayoutParams adsParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, android.view.Gravity.BOTTOM | android.view.Gravity.CENTER);
 	// Setup activity layout
 	@Override protected void onCreate (Bundle savedInstanceState)
@@ -44,6 +49,7 @@ public class UnityPlayerActivity extends Activity
 		layout.addView(mUnityPlayer);
 
 		showAdmobAds( this);
+
 		//showStartAppBanner();
 
 
@@ -67,6 +73,7 @@ public class UnityPlayerActivity extends Activity
 
 		//UnityPlayerNativeActivity.ShowChartboost();
 		instance.ShowAdmobFull();
+		//instance.loadInterstitialAdFaceBook(instance);
 		return 1;
 	}
 	public static boolean isFirstShowAdmob = true;
@@ -78,7 +85,7 @@ public class UnityPlayerActivity extends Activity
 				MobileAds.initialize(activity.getApplicationContext());
 				adView = new AdView(UnityPlayer.currentActivity);
 				adView.setAdSize(AdSize.BANNER);
-				adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+				adView.setAdUnitId("ca-app-pub-7727165943990659/8036424328");
 				// adView = new AdView(UnityPlayer.currentActivity,
 				// AdSize.SMART_BANNER, "a1531e034cf3eee");//hcgmobilegame
 
@@ -100,6 +107,7 @@ public class UnityPlayerActivity extends Activity
 					//	instance.showStartAppBanner();
 						adView.destroy();
 						adView.setVisibility(View.GONE);
+						instance.showBannerFaceBook();
 					}
 					@Override
 					public void onAdOpened(){
@@ -118,6 +126,45 @@ public class UnityPlayerActivity extends Activity
 			}
 		});
 	}
+	public void showBannerFaceBook() {
+		adViewFaceBook = new com.facebook.ads.AdView(this,
+				"1041333512654421_1048820065239099",
+				com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+		Collection<String> TestDevices = new ArrayList<String>();
+		TestDevices.add("xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+		com.facebook.ads.AdSettings.addTestDevices(TestDevices);
+		com.facebook.ads.AdSettings.addTestDevice("2a2ab03d07ce6eaced63502d841a103e");
+		com.facebook.ads.AdSettings.addTestDevice("090021134d2dc35fe0e3dceb8b361de1");
+
+		layout.addView(adViewFaceBook, adsParams);
+		adViewFaceBook.setAdListener(new com.facebook.ads.AdListener() {
+
+			@Override
+			public void onError(com.facebook.ads.Ad ad,
+								com.facebook.ads.AdError error) {
+				// Ad failed to load.
+				Log.d("aaa", "aa");
+				// Add code to hide the ad's view
+				// adViewFaceBook.dis
+				// showStarAppBanner();
+			}
+
+			@Override
+			public void onAdLoaded(com.facebook.ads.Ad ad) {
+				// Ad was loaded
+				// Add code to show the ad's view
+				Log.d("aaa", "bbb");// cai thu muc sdk nam cho nao??
+			}
+
+			@Override
+			public void onAdClicked(com.facebook.ads.Ad ad) {
+				// Use this function to detect when an ad was clicked.
+			}
+
+		});
+		adViewFaceBook.loadAd();
+
+	}
 
 	public void ShowAdmobFull()// goi tu ben unity sang
 	{
@@ -126,7 +173,7 @@ public class UnityPlayerActivity extends Activity
 			@Override
 			public void run() {
 				interstitial = new InterstitialAd(instance);
-				interstitial.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+				interstitial.setAdUnitId("ca-app-pub-7727165943990659/3465219920");
 				// Create ad request.
 				AdRequest adRequest = new AdRequest.Builder().build();
 				// Begin loading your interstitial.
@@ -144,7 +191,7 @@ public class UnityPlayerActivity extends Activity
 					public void onAdFailedToLoad(int errorCode) {
 						Log.d("Admob onAdFailedToLoad", "onAdFailedToLoad");
 						//instance.ShowChartboost();
-					//	loadInterstitialAdFaceBook(instance);
+						loadInterstitialAdFaceBook(instance);
 						//ShowStarAppFull();
 					}
 
@@ -166,6 +213,62 @@ public class UnityPlayerActivity extends Activity
 		});
 
 	}
+
+	public static void loadInterstitialAdFaceBook(UnityPlayerActivity activity) {
+
+		Log.d("Admob", "MRAID InApp Ad is calling..");
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Log.e("TOAN", "ShowAds22222222");
+				Collection<String> TestDevices = new ArrayList<String>();
+				TestDevices.add("403706e6d09a7de076ce069c9bc804ec");
+				com.facebook.ads.AdSettings.addTestDevices(TestDevices);
+				com.facebook.ads.AdSettings
+						.addTestDevice("2a2ab03d07ce6eaced63502d841a103e");
+				com.facebook.ads.AdSettings
+						.addTestDevice("090021134d2dc35fe0e3dceb8b361de1");
+
+				interstitialFaceBook = new com.facebook.ads.InterstitialAd(
+						instance, "1041333512654421_1041333955987710");
+
+				interstitialFaceBook
+						.setAdListener(new com.facebook.ads.InterstitialAdListener() {
+							@Override
+							public void onError(com.facebook.ads.Ad ad,
+												com.facebook.ads.AdError error) {
+								Log.e("TOAN",
+										"onError: " + error.getErrorMessage());
+								//instance.ShowStarAppFull();
+								//	instance.ShowAdmobFull();
+
+							}
+
+							@Override
+							public void onAdLoaded(com.facebook.ads.Ad ad) {
+								Log.e("TOAN", "onAdLoaded: ");
+								interstitialFaceBook.show();
+							}
+
+							@Override
+							public void onAdClicked(com.facebook.ads.Ad arg0) {
+							}
+
+							@Override
+							public void onInterstitialDismissed(
+									com.facebook.ads.Ad arg0) {
+							}
+
+							@Override
+							public void onInterstitialDisplayed(
+									com.facebook.ads.Ad arg0) {
+							}
+						});
+				interstitialFaceBook.loadAd();
+				Log.e("TOAN", "ShowAds333333333333");
+			}
+		});
+	}
 	// Quit Unity
 	@Override protected void onDestroy ()
 	{
@@ -173,6 +276,11 @@ public class UnityPlayerActivity extends Activity
 		if (adView != null) {
 			adView.resume();
 		}
+		if (interstitialFaceBook != null) {
+			interstitialFaceBook.destroy();
+		}
+		if(adViewFaceBook!= null)
+			adViewFaceBook.destroy();
 		super.onDestroy();
 	}
 
