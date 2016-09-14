@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "835590507277",
+    "firebase_url": "https://ban-trung-khung-long-3925d.firebaseio.com",
+    "project_id": "ban-trung-khung-long-3925d",
+    "storage_bucket": "ban-trung-khung-long-3925d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835590507277:android:c9fb4f09ca59bf15",
+        "android_client_info": {
+          "package_name": "org.xiaxio.bubbleshoot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835590507277-s26an5ddftrv4c2hirrmtueblrln1165.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJDE_JjrRnAIjApBtIZb4BeaW8yTTBISc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
