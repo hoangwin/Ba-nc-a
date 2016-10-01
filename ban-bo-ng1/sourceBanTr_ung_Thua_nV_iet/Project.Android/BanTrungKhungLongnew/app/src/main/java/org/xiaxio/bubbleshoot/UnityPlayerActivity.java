@@ -47,6 +47,7 @@ public class UnityPlayerActivity extends Activity
 			//instance.ShowAdmobFull();
 		layout.addView(mUnityPlayer);
 		showAdmobAds( this);
+		LoadAdmobFull();
 		//showStartAppBanner();
 		setContentView(layout);
 		//setContentView(mUnityPlayer);
@@ -153,10 +154,28 @@ public class UnityPlayerActivity extends Activity
 
 	public void ShowAdmobFull()// goi tu ben unity sang
 	{
+		if (interstitial != null ) {
+			UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if(interstitial.isLoaded())
+						interstitial.show();
+					else
+						loadInterstitialAdFaceBook(instance);
+				}
+
+			});
+		}
+		else {
+			loadInterstitialAdFaceBook(instance);
+		}
+	}
+	public void LoadAdmobFull()// goi tu ben unity sang
+	{
 		Log.d("Admob", "MRAID InApp Ad is calling..");
-		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
+		//UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+		//	@Override
+		//	public void run() {
 				interstitial = new InterstitialAd(instance);
 				interstitial.setAdUnitId("ca-app-pub-7727165943990659/3465219920");
 				// Create ad request.
@@ -167,16 +186,16 @@ public class UnityPlayerActivity extends Activity
 				interstitial.setAdListener(new AdListener() {
 					@Override
 					public void onAdLoaded() {
-						if (interstitial.isLoaded()) {
-							interstitial.show();
-						}
+						//if (interstitial.isLoaded()) {
+						//	interstitial.show();
+						//}
 						Log.d("Admob onAdLoaded", "onAdLoaded");
 					}
 
 					public void onAdFailedToLoad(int errorCode) {
 						Log.d("Admob onAdFailedToLoad", "onAdFailedToLoad");
 						//instance.ShowChartboost();
-						loadInterstitialAdFaceBook(instance);
+					//	loadInterstitialAdFaceBook(instance);
 						//ShowStarAppFull();
 					}
 
@@ -187,15 +206,15 @@ public class UnityPlayerActivity extends Activity
 
 					public void onAdClosed() {
 						Log.d("Admob onAdClosed", "onAdClosed");
-						//AdRequest adRequest = new AdRequest.Builder().build();
-						//interstitial.loadAd(adRequest);
+						AdRequest adRequest = new AdRequest.Builder().build();
+						interstitial.loadAd(adRequest);
 					}
 					public void onAdLeftApplication() {
 						Log.d("Admob onAdLeftAppli", "onAdLeftApplication");
 					}
 				});
-			}
-		});
+		//}
+		//});
 
 	}
 
